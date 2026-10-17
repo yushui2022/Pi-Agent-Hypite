@@ -15,7 +15,8 @@ export function createAgentManager(config) {
   };
   async function status(){
     const exists=async p=>{try{await access(p);return true;}catch{return false;}};
-    return {piInstalled:await exists(config.piCli),hypitInstalled:await exists(path.join(config.hypitRoot,'bin/hypit.mjs')),skillInstalled:await exists(config.skillPath),modelConfigured:!!(config.agent?.provider&&config.agent?.model),provider:config.agent?.provider||'',model:config.agent?.model||'',generation:false};
+    const sourceIntegration=config.piCli===path.join(projectRoot,'vendor/pi/packages/coding-agent/dist/bundle/cli.js')&&config.hypitRoot===path.join(projectRoot,'vendor/hypit');
+    return {sourceIntegration,piCli:config.piCli,hypitRoot:config.hypitRoot,piInstalled:await exists(config.piCli),hypitInstalled:await exists(path.join(config.hypitRoot,'bin/hypit.mjs')),skillInstalled:await exists(config.skillPath),modelConfigured:!!(config.agent?.provider&&config.agent?.model),provider:config.agent?.provider||'',model:config.agent?.model||'',generation:false};
   }
   async function runs(id){
     const dir=path.join(await jobDirectory(config,id),'agent-runs');await mkdir(dir,{recursive:true});
@@ -39,7 +40,7 @@ export function createAgentManager(config) {
       const dir=await jobDirectory(config,id);const storage=path.join(dir,'agent-runs');await mkdir(storage,{recursive:true});
       for(const name of await readdir(storage)){if(!name.endsWith('.json'))continue;const old=JSON.parse(await readFile(path.join(storage,name),'utf8'));if(old.requestId===requestId){active.delete(id);return old;}}
       const ready=await status();
-      if(!ready.piInstalled||!ready.hypitInstalled||!ready.skillInstalled)throw new Error('项目依赖缺失，请先运行 npm ci');
+      if(!ready.piInstalled||!ready.hypitInstalled||!ready.skillInstalled)throw new Error('源码运行环境缺失，请先运行 npm run source:setup');
       if(mode==='author'&&!ready.modelConfigured){const e=new Error('尚未配置 Pi 模型；可先运行接入检查。');e.status=409;throw e;}
       const job=await showJob(config,id);const runId='run_'+randomUUID();
       const record=slot.record={id:runId,jobId:id,requestId,mode,status:'starting',startedAt:new Date().toISOString(),provider:ready.provider,model:ready.model,prompt:mode==='author'?redact(prompt):'',events:[],sessionId:null};

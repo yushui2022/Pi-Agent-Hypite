@@ -13,7 +13,7 @@ export function mountAgent(host, id, hasChanges) {
       configured = state.agent.modelConfigured;
       installed = state.agent.piInstalled && state.agent.hypitInstalled && state.agent.skillInstalled;
       busy = runs.some(r => ['starting','running','stopping'].includes(r.status));
-      find('status').textContent = !installed ? '引擎依赖缺失，请运行 npm ci。' : configured ? `模型：${state.agent.provider} / ${state.agent.model}。准备工程会调用模型；不提交视频生成。` : 'Pi 与 Hypit 已安装。可免费检查接入；配置模型后可准备工程，视频生成尚未接通。';
+      find('status').textContent = (state.agent.sourceIntegration ? '运行来源：本仓库源码。' : '运行来源：自定义路径。') + (!installed ? '引擎依赖缺失，请运行 npm run source:setup。' : configured ? `模型：${state.agent.provider} / ${state.agent.model}。准备工程会调用模型；不提交视频生成。` : 'Pi 与 Hypit 已就绪。可免费检查接入；配置模型后可准备工程，视频生成尚未接通。');
       find('probe').disabled = busy || !installed;
       find('author').disabled = busy || !configured || !installed;
       find('stop').disabled = !busy;

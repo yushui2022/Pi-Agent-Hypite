@@ -12,8 +12,8 @@ export async function loadConfig(file) {
   const resolve=(value, fallback)=>path.resolve(path.dirname(file),value || fallback);
   return {
     ...raw,
-    piCli: raw.piCli ? resolve(raw.piCli) : path.join(projectRoot,'node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js'),
-    hypitRoot: raw.hypitRoot ? resolve(raw.hypitRoot) : path.join(projectRoot,'node_modules/@hypit/hypit'),
+    piCli: raw.piCli ? resolve(raw.piCli) : path.join(projectRoot,'vendor/pi/packages/coding-agent/dist/bundle/cli.js'),
+    hypitRoot: raw.hypitRoot ? resolve(raw.hypitRoot) : path.join(projectRoot,'vendor/hypit'),
     skillPath: raw.skillPath ? resolve(raw.skillPath) : path.join(projectRoot,'vendor/hypit/skills/hypit/SKILL.md'),
     tempRoot: resolve(raw.tempRoot,'.cache'), dataRoot:resolve(raw.dataRoot,'.data/jobs'),
     piHome:resolve(raw.piHome,'.data/pi'),

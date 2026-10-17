@@ -12,10 +12,10 @@
     "job": "node scripts/job.mjs",
     "test": "node --test test/*.test.mjs",
     "verify:integration": "node scripts/verify-integration.mjs",
-    "pi": "node scripts/pi.mjs"
-  },
-  "dependencies": {
-    "@earendil-works/pi-coding-agent": "1.1.0",
-    "@hypit/hypit": "0.2.13"
+    "pi": "node scripts/pi.mjs",
+    "source:setup": "node scripts/source.mjs setup",
+    "source:build": "node scripts/source.mjs build",
+    "source:models": "node scripts/source.mjs models",
+    "hypit": "node scripts/source.mjs hypit"
   }
 }

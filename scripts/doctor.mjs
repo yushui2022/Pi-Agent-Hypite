@@ -23,6 +23,8 @@ const run = (cli, args) => execFileSync(process.execPath, [cli, ...args], {
 }).trim();
 const report = {
   recordedAt: new Date().toISOString(), node: process.version,
+  piCli: config.piCli,
+  hypitSourceRoot: config.hypitRoot,
   piVersion: run(config.piCli, ['--version']),
   hypit: JSON.parse(run(path.join(config.hypitRoot, 'bin/hypit.mjs'), ['version', '--json'])),
   checks: [],

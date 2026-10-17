@@ -1,4 +1,4 @@
-import { Type } from '@earendil-works/pi-ai';
+import { Type } from '../../vendor/pi/packages/ai/dist/index.js';
 import { executeWorkspaceTool } from './workspace-tools.mjs';
 export default function(pi) {
   const config=JSON.parse(process.env.WORKSPACE_AGENT_CONFIG);
