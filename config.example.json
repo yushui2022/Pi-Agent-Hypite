@@ -1,0 +1,10 @@
+{
+  "dataRoot": ".data/jobs",
+  "tempRoot": ".cache",
+  "piHome": ".data/pi",
+  "agent": {
+    "provider": "",
+    "model": "",
+    "timeoutMs": 600000
+  }
+}

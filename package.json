@@ -1,0 +1,21 @@
+{
+  "name": "pi-agent-hypite",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node apps/api/server.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "job": "node scripts/job.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify:integration": "node scripts/verify-integration.mjs",
+    "pi": "node scripts/pi.mjs"
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "1.1.0",
+    "@hypit/hypit": "0.2.13"
+  }
+}

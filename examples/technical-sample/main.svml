@@ -1,0 +1,9 @@
+<?svml using="@hypit/markup@1"?>
+<svml>
+  <import as="text" from="@hypit/text@1"/>
+  <import as="style" source="./template.svs"/>
+  <text:Value id="content">Pi × Hypit 工程检查技术样例。此输出不是视频。</text:Value>
+  <text:Render id="message" template={style.sample}>
+    <text:Set name="body" text={content}/>
+  </text:Render>
+</svml>

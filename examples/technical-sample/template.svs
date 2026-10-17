@@ -1,0 +1,5 @@
+<?svml using="@hypit/text/svs@1"?>
+<sheet version="1" id="sample">
+  text-template.sample { separator: paragraph; }
+  text-template.sample.block.body { kind: slot; order: 10; slot: body; optional: false; }
+</sheet>

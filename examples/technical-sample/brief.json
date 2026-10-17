@@ -1,0 +1,9 @@
+{
+  "title": "P0 工程检查技术样例（非商品视频）",
+  "account": "internal-test",
+  "product": "无真实商品，仅测试文本工程",
+  "language": "zh-CN",
+  "requirements": "验证独立工程的检查与规划，不生成视频、不调用模型。",
+  "technicalSample": true,
+  "references": []
+}
