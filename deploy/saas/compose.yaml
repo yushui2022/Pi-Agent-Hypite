@@ -1,0 +1,35 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: deploy/saas/api.Dockerfile
+    environment:
+      PUBLIC_ORIGIN: https://${DOMAIN:?Set DOMAIN in .env}
+      SAAS_TRUST_PROXY: "true"
+    volumes:
+      - studio_data:/data
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    security_opt:
+      - no-new-privileges:true
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/saas/web.Dockerfile
+    environment:
+      SITE_ADDRESS: ${DOMAIN:?Set DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  studio_data:
+  caddy_data:
+  caddy_config:

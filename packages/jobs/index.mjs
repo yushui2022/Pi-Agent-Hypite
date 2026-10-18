@@ -32,12 +32,27 @@ export async function jobDirectory(config, id) {
 export async function createJob(config, input) {
   const brief = validateBrief(input);
   const id = `job_${randomUUID()}`;
+  return initializeJob(config,brief,id,{});
+}
+export async function ensureBatchJob(config,input,{id,batchId,accountId,sequence}) {
+  if(!idPattern.test(id))throw new Error('Invalid job ID');
+  const brief=validateBrief(input),file=path.join(config.dataRoot,id,'job.json');
+  try {
+    const old=await json(file);
+    await jobDirectory(config,id);
+    if(old.batchId!==batchId||old.accountId!==accountId||old.sequence!==sequence)throw new Error('任务 ID 冲突，未覆盖现有任务');
+    return old;
+  }catch(e){if(e.code!=='ENOENT')throw e;}
+  return initializeJob(config,brief,id,{batchId,accountId,sequence});
+}
+async function initializeJob(config,brief,id,metadata) {
   const dir = path.join(config.dataRoot, id);
   await mkdir(dir, { recursive: true });
+  await jobDirectory(config,id);
   for (const name of ['project', 'inspections']) await mkdir(path.join(dir, name));
   await save(path.join(dir, 'project/package.json'), { name: id.replaceAll('_', '-'), private: true, type: 'module' });
   await save(path.join(dir, 'brief.json'), brief);
-  const job = { format: 'production-job@1', id, createdAt: new Date().toISOString(), title: brief.title, status: 'draft', technicalSample: brief.technicalSample };
+  const job = { format: 'production-job@1', id, createdAt: new Date().toISOString(), title: brief.title, status: 'draft', technicalSample: brief.technicalSample, ...metadata };
   // Manifest is written last; partially created directories cannot appear as valid jobs.
   await save(path.join(dir, 'job.json'), job);
   return { ...job, directory: dir };
@@ -49,13 +64,16 @@ export async function showJob(config, id) {
   const brief = await json(path.join(dir, 'brief.json'));
   return { ...await json(path.join(dir, 'job.json')), title: brief.title, brief, revision: sha(JSON.stringify(brief)), directory: dir, inspections };
 }
-export async function listJobs(config) {
+export async function listJobs(config, {summary=false}={}) {
   await mkdir(config.dataRoot, { recursive: true });
   const entries = await readdir(config.dataRoot, { withFileTypes: true });
   const jobs = [];
   for (const entry of entries) {
     if (!entry.isDirectory() || !idPattern.test(entry.name)) continue;
-    try { jobs.push(await showJob(config, entry.name)); }
+    try {
+      if(summary){const dir=await jobDirectory(config,entry.name),brief=await json(path.join(dir,'brief.json'));jobs.push({...await json(path.join(dir,'job.json')),title:brief.title,referenceCount:brief.references.length,brief:{account:brief.account,language:brief.language,product:brief.product.slice(0,500)}});}
+      else jobs.push(await showJob(config, entry.name));
+    }
     catch (error) { if (error.code !== 'ENOENT') throw error; }
   }
   return jobs.sort((a, b) => b.createdAt.localeCompare(a.createdAt));

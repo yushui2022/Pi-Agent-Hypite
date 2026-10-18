@@ -1,0 +1,99 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-10-18",
+  "usage": "AI-generated decorative UI backgrounds and scene illustrations; not user assets or product outputs",
+  "images": [
+    {
+      "name": "scenario-product",
+      "width": 480,
+      "height": 320,
+      "bytes": 20854,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/scenario-product-480.webp"
+    },
+    {
+      "name": "scenario-product",
+      "width": 960,
+      "height": 640,
+      "bytes": 65728,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/scenario-product-960.webp"
+    },
+    {
+      "name": "scenario-travel",
+      "width": 480,
+      "height": 320,
+      "bytes": 35842,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/scenario-travel-480.webp"
+    },
+    {
+      "name": "scenario-travel",
+      "width": 960,
+      "height": 640,
+      "bytes": 120172,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/scenario-travel-960.webp"
+    },
+    {
+      "name": "scenario-brand",
+      "width": 480,
+      "height": 320,
+      "bytes": 29534,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/scenario-brand-480.webp"
+    },
+    {
+      "name": "scenario-brand",
+      "width": 960,
+      "height": 640,
+      "bytes": 98140,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/scenario-brand-960.webp"
+    },
+    {
+      "name": "remix-storyboard",
+      "width": 480,
+      "height": 320,
+      "bytes": 23008,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/remix-storyboard-480.webp"
+    },
+    {
+      "name": "remix-storyboard",
+      "width": 960,
+      "height": 640,
+      "bytes": 72358,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/remix-storyboard-960.webp"
+    },
+    {
+      "name": "creation-atmosphere-dark",
+      "role": "decorative-background",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 41724,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/creation-atmosphere-dark.webp"
+    },
+    {
+      "name": "creation-atmosphere-light",
+      "role": "decorative-background",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 28878,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "path": "apps/saas-web/assets/creation-atmosphere-light.webp"
+    }
+  ]
+}

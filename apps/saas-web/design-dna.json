@@ -1,0 +1,9 @@
+{
+  "mode": "structure-inspired-original-brand",
+  "reference": "https://pollo.ai/zh/home",
+  "evidence": {"content": "public-page-text", "visual": "user-provided reference screenshots; live site access previously challenged", "source": "original implementation and generated assets"},
+  "design_system": {"sidebar": "224px", "canvas": "#111114 / #faf9f6", "surface": "#1c1b1b / #fffefa", "accent": "#ffb17a / #a84b19", "font": "Segoe UI, Microsoft YaHei, system-ui", "radius": "8–20px"},
+  "design_style": {"layout": "persistent navigation, centered reference-and-brief composer, collapsible workflow, scenario cards, recent projects", "media": "original AI-generated ambient backgrounds and scene illustrations; authenticated user uploads"},
+  "visual_effects": {"effect_intensity": "decorative WebP background with masked fade", "motion": "brief hover transitions with reduced-motion support"},
+  "not_implemented": ["image generation", "agent execution", "payments", "public model catalog"]
+}

@@ -14,6 +14,14 @@ export function selectJobs(jobs, state) {
       sort === 'oldest' ? a.createdAt.localeCompare(b.createdAt) : b.createdAt.localeCompare(a.createdAt)) || a.id.localeCompare(b.id));
 }
 export function parseView(hash) {
+  if(!hash||hash==='#remix')return {type:'remix'};
+  const remix=hash.match(/^#remix\/(remix_[a-f0-9-]{36})$/);
+  if(remix)return {type:'remix',id:remix[1]};
+  const account=hash.match(/^#accounts\/(account_[a-f0-9-]{36}|new|import)$/);
+  if(account)return {type:'accounts',id:account[1]};
+  if(['#accounts','#batches','#batch-new'].includes(hash))return {type:hash.slice(1)};
+  const batch=hash.match(/^#batch\/(batch_[a-f0-9-]{36})$/);
+  if(batch)return {type:'batch',id:batch[1]};
   if (hash === '#services') return { type: 'services' };
   const match = hash.match(/^#job\/(job_[a-f0-9-]{36})$/);
   return match ? { type: 'job', id: match[1] } : { type: 'tasks' };

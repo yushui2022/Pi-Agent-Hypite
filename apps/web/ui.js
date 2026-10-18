@@ -1,4 +1,17 @@
 // Shared presentation behavior. No business requests or job persistence here.
+export async function initDesktopLifecycle(guard) {
+  const tauri = window.__TAURI__;
+  if (!tauri?.core?.invoke) return;
+  let deciding = false;
+  await tauri.event.listen('desktop-close-requested', async () => {
+    if (deciding) return;
+    deciding = true;
+    try { if (await guard.canLeave()) await tauri.core.invoke('desktop_close'); }
+    finally { deciding = false; }
+  });
+  await tauri.core.invoke('desktop_ready');
+}
+
 export function initTheme() {
   const select = document.querySelector('#theme');
   let preference = 'system';

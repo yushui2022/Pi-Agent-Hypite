@@ -7,3 +7,6 @@ config.local.json
 *.log
 .data/
 .cache/
+dist/
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/gen/

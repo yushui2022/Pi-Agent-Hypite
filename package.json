@@ -7,6 +7,8 @@
     "node": ">=24"
   },
   "scripts": {
+    "saas:dev": "node apps/saas-api/server.mjs",
+    "saas:build": "node scripts/build-saas-web.mjs",
     "start": "node apps/api/server.mjs",
     "doctor": "node scripts/doctor.mjs",
     "job": "node scripts/job.mjs",
@@ -16,6 +18,14 @@
     "source:setup": "node scripts/source.mjs setup",
     "source:build": "node scripts/source.mjs build",
     "source:models": "node scripts/source.mjs models",
-    "hypit": "node scripts/source.mjs hypit"
+    "hypit": "node scripts/source.mjs hypit",
+    "desktop:dev": "node scripts/desktop.mjs dev",
+    "desktop:check": "node scripts/desktop.mjs check",
+    "desktop:smoke": "node scripts/desktop.mjs smoke",
+    "desktop:test": "node scripts/desktop.mjs test",
+    "desktop:qa": "node scripts/desktop.mjs qa"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1"
   }
 }

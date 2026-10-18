@@ -1,7 +1,9 @@
+import { mountRemix } from './remix.js';
 import { mountAgent } from './agent.js';
 import { normalizeListState, selectJobs, parseView } from './workspace-state.js';
 import { api } from './api.js';
-import { initTheme, createEditGuard } from './ui.js';
+import { initTheme, createEditGuard, initDesktopLifecycle } from './ui.js';
+import { mountAccounts, mountBatches, mountBatchNew, mountBatch } from './bulk.js';
 initTheme();
 const guard = createEditGuard();
 let viewRequest = 0;
@@ -9,13 +11,28 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let savedList = {}; try { savedList = JSON.parse(sessionStorage.getItem('workspace-list') || '{}') || {}; } catch {}
 let { filter, query, sort } = normalizeListState(savedList);
-let jobs = [], current = null;
+let jobs = [], current = null, listPage=0;
 let activeHash = location.hash || '#tasks';
-function rememberList() { try { sessionStorage.setItem('workspace-list', JSON.stringify({filter,query,sort})); } catch {} }
+function rememberList() { listPage=0; try { sessionStorage.setItem('workspace-list', JSON.stringify({filter,query,sort})); } catch {} }
 function commitView(hash) { activeHash = hash; history.replaceState(null, '', hash); }
 function cancelNavigation() { history.replaceState(null, '', activeHash); }
 function toast(text) { $('#message').textContent = text; $('#message').hidden = false; clearTimeout(toast.timer); toast.timer = setTimeout(() => $('#message').hidden = true, 5000); }
-function nav(service = false) { if(service) $('#nav-count').hidden=true; $('#tasks-nav').classList.toggle('active', !service); $('#services-nav').classList.toggle('active', service); $('#breadcrumb').textContent = service ? '服务连接' : '制作任务'; }
+function nav(service = false) { document.querySelectorAll('.sidebar .nav').forEach(b=>b.classList.remove('active')); if(service) $('#nav-count').hidden=true; $('#tasks-nav').classList.toggle('active', !service); $('#services-nav').classList.toggle('active', service); $('#breadcrumb').textContent = service ? '服务连接' : '制作任务'; }
+async function navigate(hash) {
+  const route=parseView(hash);
+  if(route.type==='job')return detail(route.id);
+  if(route.type==='services')return services();
+  if(route.type==='tasks')return list();
+  if(!await guard.canLeave()){cancelNavigation();return;}
+  const request=++viewRequest;commitView(hash);current=null;nav();$('#nav-count').hidden=true;
+  document.querySelectorAll('.sidebar .nav').forEach(b=>b.classList.remove('active'));
+  $(route.type==='remix'?'#remix-nav':route.type==='accounts'?'#accounts-nav':'#batches-nav').classList.add('active');
+  $('#breadcrumb').textContent=route.type==='remix'?'复刻项目':route.type==='accounts'?'账号资料':'批次工作台';
+  $('#content').innerHTML='<div class="loading">正在读取资料…</div>';
+  const ctx={root:$('#content'),guard,toast,navigate,isCurrent:()=>request===viewRequest};
+  try {if(route.type==='remix')await mountRemix(ctx,route);else if(route.type==='accounts')await mountAccounts(ctx,route);else if(route.type==='batch-new')await mountBatchNew(ctx);else if(route.type==='batch')await mountBatch(ctx,route.id);else await mountBatches(ctx);}
+  catch(e){if(ctx.isCurrent()){$('#content').innerHTML=`<div class="panel empty"><h2>读取失败</h2><p class="error">${esc(e.message)}</p><button id="bulk-retry">重试</button></div>`;$('#bulk-retry').onclick=()=>navigate(hash);}}
+}
 const date = s => new Date(s).toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
 function openCreate() { guard.setDirty(false); $('#form-error').textContent = ''; $('#create-dialog').showModal(); }
 async function list() {
@@ -29,7 +46,7 @@ function renderList() {
   $('#content').innerHTML = `<div class="page-heading"><div><p class="eyebrow">PRODUCTION DESK</p><h1>制作任务</h1><p class="muted">管理制作需求、参考资料与工程检查。</p></div><button id="new-job" class="primary">＋ 新建任务</button></div>
   <div class="metrics"><div class="metric"><span>全部任务</span><strong>${jobs.length.toString().padStart(2,'0')}</strong><small>所有制作计划</small></div><div class="metric"><span>需求准备中</span><strong>${jobs.filter(j=>!j.technicalSample).length.toString().padStart(2,'0')}</strong><small>可以随时补充和修改</small></div><div class="metric"><span>已交付视频</span><strong>—</strong><small>接通制作服务后开始生产</small></div></div>
   <div class="notice"><div><h3>制作服务待连接</h3><p>当前可管理需求与检查工程，视频生成将在服务接通后启用。</p></div><button id="view-services" class="text-button">查看服务状态 →</button></div>
-  <div class="toolbar"><div class="filters"><button class="filter ${filter==='all'?'selected':''}" data-filter="all" aria-pressed="${filter==='all'}">全部任务</button><button class="filter ${filter==='production'?'selected':''}" data-filter="production" aria-pressed="${filter==='production'}">制作需求</button><button class="filter ${filter==='sample'?'selected':''}" data-filter="sample" aria-pressed="${filter==='sample'}">技术样例</button></div><div class="list-tools"><select id="sort" aria-label="任务排序"><option value="newest">最新创建</option><option value="oldest">最早创建</option><option value="title">任务名称</option></select><input id="search" class="search" type="search" placeholder="搜索任务、账号或商品" aria-label="搜索任务" value="${esc(query)}"></div></div><div class="list-summary"><span id="result-count" role="status"></span><button class="text-button" id="clear-filters">清除筛选</button></div><div id="results"></div>`;
+  <div class="toolbar"><div class="filters"><button class="filter ${filter==='all'?'selected':''}" data-filter="all" aria-pressed="${filter==='all'}">全部任务</button><button class="filter ${filter==='production'?'selected':''}" data-filter="production" aria-pressed="${filter==='production'}">制作需求</button><button class="filter ${filter==='sample'?'selected':''}" data-filter="sample" aria-pressed="${filter==='sample'}">技术样例</button></div><div class="list-tools"><select id="sort" aria-label="任务排序"><option value="newest">最新创建</option><option value="oldest">最早创建</option><option value="title">任务名称</option></select><input id="search" class="search" type="search" placeholder="搜索任务、账号或商品摘要" aria-label="搜索任务" value="${esc(query)}"></div></div><div class="list-summary"><span id="result-count" role="status"></span><button class="text-button" id="clear-filters">清除筛选</button></div><div id="results"></div>`;
   $('#new-job').onclick = openCreate; $('#view-services').onclick = services;
   document.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { filter = b.dataset.filter; rememberList(); renderList(); });
   $('#search').oninput = e => { query = e.target.value; rememberList(); renderRows(); };
@@ -38,12 +55,17 @@ function renderList() {
   renderRows();
 }
 function renderRows() {
-  const visible = selectJobs(jobs,{filter,query,sort});
-  $('#result-count').textContent=`显示 ${visible.length} / ${jobs.length} 个任务`;
+  const filtered = selectJobs(jobs,{filter,query,sort});
+  listPage=Math.min(listPage,Math.max(0,Math.ceil(filtered.length/40)-1));
+  const visible=filtered.slice(listPage*40,(listPage+1)*40);
+  $('#result-count').textContent=`匹配 ${filtered.length} / ${jobs.length} 个任务 · 本页 ${visible.length} 个`;
   $('#clear-filters').hidden=filter==='all'&&!query;
-  $('#results').innerHTML = visible.length ? `<div class="table-wrap"><table><thead><tr><th>制作任务</th><th>账号 / 项目</th><th>语言</th><th>状态</th><th>创建时间</th><th></th></tr></thead><tbody>${visible.map(j=>`<tr><td><button class="job-title" data-job="${j.id}">${esc(j.title)}</button><div class="subline">${j.brief.references.length ? `${j.brief.references.length} 条参考已记录` : '参考素材待补充'}</div></td><td data-label="账号 / 项目">${esc(j.brief.account)}</td><td data-label="语言">${esc(j.brief.language)}</td><td data-label="状态"><span class="badge ${j.technicalSample?'sample':''}">${j.technicalSample?'技术样例':'需求准备中'}</span></td><td data-label="创建时间" class="muted">${date(j.createdAt)}</td><td><button class="text-button" data-job="${j.id}" aria-label="打开 ${esc(j.title)}">→</button></td></tr>`).join('')}</tbody></table></div>` : `<div class="panel empty"><div class="empty-mark">↗</div><h2>${jobs.length?'没有匹配的任务':'为下一条视频，留一个起点'}</h2><p>${jobs.length?'试试其他关键词或筛选条件。':'写下商品、受众和制作方向。现在还不需要素材或视频 API。'}</p>${jobs.length?'':'<button id="first-job" class="primary">创建第一条任务</button>'}</div>`;
+  $('#results').innerHTML = visible.length ? `<div class="table-wrap"><table><thead><tr><th>制作任务</th><th>账号 / 项目</th><th>语言</th><th>状态</th><th>创建时间</th><th></th></tr></thead><tbody>${visible.map(j=>`<tr><td><button class="job-title" data-job="${j.id}">${esc(j.title)}</button><div class="subline">${(j.referenceCount ?? j.brief.references?.length ?? 0) ? `${(j.referenceCount ?? j.brief.references?.length ?? 0)} 条参考已记录` : '参考素材待补充'}</div></td><td data-label="账号 / 项目">${esc(j.brief.account)}</td><td data-label="语言">${esc(j.brief.language)}</td><td data-label="状态"><span class="badge ${j.technicalSample?'sample':''}">${j.technicalSample?'技术样例':'需求准备中'}</span></td><td data-label="创建时间" class="muted">${date(j.createdAt)}</td><td><button class="text-button" data-job="${j.id}" aria-label="打开 ${esc(j.title)}">→</button></td></tr>`).join('')}</tbody></table></div>` : `<div class="panel empty"><div class="empty-mark">↗</div><h2>${jobs.length?'没有匹配的任务':'为下一条视频，留一个起点'}</h2><p>${jobs.length?'试试其他关键词或筛选条件。':'写下商品、受众和制作方向。现在还不需要素材或视频 API。'}</p>${jobs.length?'':'<button id="first-job" class="primary">创建第一条任务</button>'}</div>`;
   document.querySelectorAll('[data-job]').forEach(b => b.onclick = () => detail(b.dataset.job));
   if ($('#first-job')) $('#first-job').onclick = openCreate;
+  let pagination=$('#task-pagination');if(!pagination){pagination=document.createElement('div');pagination.id='task-pagination';pagination.className='bulk-pager';$('#results').after(pagination);}
+  pagination.innerHTML=`<button id="task-prev" ${listPage===0?'disabled':''}>上一页</button><span>第 ${listPage+1} / ${Math.max(1,Math.ceil(filtered.length/40))} 页</span><button id="task-next" ${(listPage+1)*40>=filtered.length?'disabled':''}>下一页</button>`;
+  $('#task-prev').onclick=()=>{listPage--;renderRows();};$('#task-next').onclick=()=>{listPage++;renderRows();};
 }
 async function detail(id) {
   if (!await guard.canLeave()) { cancelNavigation(); return; }
@@ -57,6 +79,7 @@ async function detail(id) {
     <div class="panel"><h2>工程检查记录</h2><p class="muted">检查结果与成片验收分开记录。</p>${job.inspections.length ? job.inspections.slice().reverse().map(r=>`<div class="history-row"><span class="badge ${r.ok?'good':'bad'}">${r.ok?'通过':'未通过'}</span> ${esc(r.operation)} · ${esc(r.source)}<small>${date(r.finishedAt)}</small>${!r.ok?`<p class="error">${esc(r.data?.error?.message || r.error || '检查失败')}</p>`:''}</div>`).join('') : '<p class="muted">暂无记录。完成工程准备后可执行检查。</p>'}
     <details><summary>本地工程工具</summary><p class="muted">仅检查可信本地工程，不会提交视频制作。</p><form id="inspect-form"><label>工程相对路径<input name="source" value="build.svrun" required></label><label>操作<select name="operation"><option value="check">检查工程</option><option value="plan">查看执行计划</option></select></label><p><button type="submit">运行检查</button></p><p id="inspect-error" class="error" role="alert"></p></form></details></div></div>
     <div class="detail-side"><div class="panel"><p class="eyebrow">NEXT STEPS</p><h2>制作准备</h2><ul class="checklist"><li>制作需求<span>已保存</span></li><li>参考素材<span>${b.references.length?'已记录引用':'待补充'}</span></li><li>模型与视频服务<span>未配置</span></li><li>制作预算<span>待确定</span></li></ul><p class="muted">服务接通后，再进入分析、生成和成片审核。</p><button disabled title="模型与视频服务尚未配置">开始制作 · 待接通服务</button></div><div class="panel"><p class="eyebrow">WORKSPACE</p><h3>独立保存，随时继续</h3><p class="muted">任务资料保存在本机配置的数据目录。刷新页面或重启服务后仍可读取。</p><p class="muted">创建于 ${date(job.createdAt)}</p></div></div></div>`;
+    if(job.batchId){const link=document.createElement('button');link.className='text-button';link.textContent='← 返回所属批次';link.onclick=()=>navigate('#batch/'+job.batchId);$('.detail-grid').before(link);}
     const agentPanel=document.createElement('div');agentPanel.className='panel';document.querySelector('.detail-side').prepend(agentPanel);mountAgent(agentPanel,id,()=>guard.hasChanges());
     $('#back').onclick = list;
     const editForm=$('#edit-form'); const initialValues=JSON.stringify([...new FormData(editForm)]);
@@ -79,9 +102,12 @@ async function services() {
 }
 $('#tasks-nav').onclick=list; $('#services-nav').onclick=services; $('#close-dialog').onclick=async()=>{ if(await guard.canLeave()) { $('#create-form').reset(); $('#create-dialog').close(); } };
 $('#create-form').oninput=()=>guard.setDirty(true);
-$('#create-dialog').addEventListener('cancel',async e=>{e.preventDefault();if(await guard.canLeave()) $('#create-dialog').close();});
-$('.brand').onclick=async e=>{e.preventDefault();await list();};
+$('#create-dialog').addEventListener('cancel',async e=>{e.preventDefault();if(await guard.canLeave()) { $('#create-form').reset(); $('#create-dialog').close(); }});
+$('.brand').onclick=async e=>{e.preventDefault();await navigate('#remix');};
 $('#create-form').onsubmit=async e=>{e.preventDefault();const button=e.submitter;button.disabled=true;guard.setPending(true);e.target.inert=true;$('#form-error').textContent='';try{const f=Object.fromEntries(new FormData(e.target));const job=await api('/api/jobs','POST',{...f,account:f.account.trim()||'待确定',product:f.product.trim()||'待补充',requirements:f.requirements.trim()||'待补充',technicalSample:false,references:[]});guard.setDirty(false);guard.setPending(false);$('#create-dialog').close();$('#nav-count').textContent=Number($('#nav-count').textContent)+1;e.target.reset();await detail(job.id);toast('任务已创建');}catch(err){$('#form-error').textContent=err.message;}finally{button.disabled=false;e.target.inert=false;guard.setPending(false);}};
-async function restoreView(){const route=parseView(location.hash); if(route.type==='job') await detail(route.id); else if(route.type==='services') await services(); else await list();}
+$('#remix-nav').onclick=()=>navigate('#remix');
+$('#accounts-nav').onclick=()=>navigate('#accounts');$('#batches-nav').onclick=()=>navigate('#batches');
+async function restoreView(){await navigate(location.hash);}
 window.addEventListener('hashchange', restoreView);
+initDesktopLifecycle(guard).catch(error=>toast('桌面退出保护初始化失败：'+error.message));
 restoreView();
