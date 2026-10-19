@@ -15,7 +15,11 @@ const paths = {
   product: '<path d="m3 7 9-4 9 4-9 4Zm0 0v10l9 4 9-4V7M12 11v10M7 5l10 4v5"/>',
   travel: '<path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2ZM9 3v16M15 5v16"/>',
   brand: '<path d="M4 4h16v16H4Z M8 16l4-8 4 8M10 13h4"/>',
-  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/>'
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/>',
+  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  panel: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-11-3 3 3 3"/>',
+  list: '<path d="M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1"/>',
+  search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>'
 };
 export function icon(name, className = '') {
   return `<svg class="ui-icon ${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.video}</svg>`;

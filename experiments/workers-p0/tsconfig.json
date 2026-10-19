@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "ESNext", "moduleResolution": "Bundler",
+    "lib": ["ES2022"], "types": ["@cloudflare/workers-types"],
+    "strict": true, "skipLibCheck": true, "noEmit": true,
+    "allowJs": true, "checkJs": false,
+    "paths": {
+      "@pi/agent": ["../../vendor/pi/packages/agent/dist/index.d.ts"],
+      "@earendil-works/pi-ai": ["../../vendor/pi/packages/ai/dist/index.d.ts"],
+      "typebox": ["../../vendor/pi/node_modules/typebox/build/index.d.mts"],
+      "typebox/system": ["../../vendor/pi/node_modules/typebox/build/system/index.d.mts"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

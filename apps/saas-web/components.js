@@ -1,12 +1,13 @@
 // Presentation only: no network, persistence or authorization decisions.
+import {icon} from './icons.js';
 export const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const e=escapeHTML;
 export function button(label,{to,id,variant='secondary',disabled=false}={}){return `<button class="ds-button ds-${variant}" ${to?`data-go="${e(to)}"`:''} ${id?`id="${e(id)}"`:''} ${disabled?'disabled':''}>${e(label)}</button>`;}
 export function pageHeader(title,description,action=''){return `<div class="ds-page-header"><div><h1>${e(title)}</h1><p>${e(description)}</p></div><div class="ds-actions">${action}</div></div>`;}
 export function badge(label,tone='neutral'){return `<span class="ds-badge ds-tone-${e(tone)}">${e(label)}</span>`;}
-export function emptyState(title,description,action=''){return `<section class="ds-empty"><h2>${e(title)}</h2><p>${e(description)}</p><div class="ds-actions">${action}</div></section>`;}
+export function emptyState(title,description,action='',symbol='folder'){return `<section class="ds-empty"><span class="empty-symbol">${icon(symbol)}</span><h2>${e(title)}</h2><p>${e(description)}</p><div class="ds-actions">${action}</div></section>`;}
 export function notice(message,tone='neutral'){return `<p class="ds-notice ds-tone-${e(tone)}">${e(message)}</p>`;}
-export function loading(label='正在读取工作空间'){return `<div class="ds-loading" role="status"><span class="ds-spinner" aria-hidden="true"></span>${e(label)}</div>`;}
+export function loading(label='正在读取工作空间'){return `<div class="ds-loading" role="status"><span class="sr-only">${e(label)}</span><div class="workspace-skeleton" aria-hidden="true"><i></i><i></i><div><i></i><i></i><i></i></div></div></div>`;}
 export function errorState(message){return `<section class="ds-empty" role="alert"><h2>暂时无法读取</h2><p>${e(message)}</p>${button('重试',{id:'page-retry',variant:'primary'})}</section>`;}
 export function field(label,control){return `<label class="ds-field"><span>${e(label)}</span>${control}</label>`;}
 export function select(id,options,value){return `<select id="${e(id)}">${options.map(([v,label])=>`<option value="${e(v)}" ${v===value?'selected':''}>${e(label)}</option>`).join('')}</select>`;}

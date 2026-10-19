@@ -1,0 +1,249 @@
+{
+  "date": "2026-10-19",
+  "status": "local-experiment-passed-cloud-gate-pending",
+  "environment": "Windows local workerd 1.20260730.1 via Miniflare 4.20260730.0",
+  "cloudAccepted": false,
+  "liveModelAccepted": false,
+  "minimalCoreBuildAccepted": false,
+  "productionReady": false,
+  "repeatedRuns": 20,
+  "output": {
+    "sha256": "14e330b935db02572f76f3ae3b50af36215db3e66c18ff5420730b383f22d5f1",
+    "bytes": 7395979,
+    "file": "final.mp4",
+    "verifiedBy": "native ffprobe/ffmpeg inspecting Worker output",
+    "duration": 15.021016,
+    "videoStart": 0.021016,
+    "audioStart": 0,
+    "frames": 375,
+    "width": 720,
+    "height": 1280,
+    "fps": "25/1",
+    "videoCodec": "h264",
+    "audioCodec": "aac",
+    "decodeErrors": 0,
+    "monotonicDts": true,
+    "minimumFrameLuma": 125.56919642857143,
+    "audioWindows": [
+      {
+        "at": 0,
+        "rms": 0.027923949782891536,
+        "voice440": 0.0333328798739241,
+        "music880": 0.008335003160963814
+      },
+      {
+        "at": 1,
+        "rms": 0.07288459194271316,
+        "voice440": 0.10004559394951226,
+        "music880": 0.02471988970673931
+      },
+      {
+        "at": 4.95,
+        "rms": 0.07269171957482652,
+        "voice440": 0.0997335240244408,
+        "music880": 0.02486828087144899
+      },
+      {
+        "at": 5,
+        "rms": 0.07277986589331954,
+        "voice440": 0.09983447782204685,
+        "music880": 0.024982432004617985
+      },
+      {
+        "at": 9.95,
+        "rms": 0.07277960865455152,
+        "voice440": 0.09986526371762337,
+        "music880": 0.02491208521183153
+      },
+      {
+        "at": 10,
+        "rms": 0.07283160175484914,
+        "voice440": 0.0999441539519436,
+        "music880": 0.024899896734633897
+      },
+      {
+        "at": 14.5,
+        "rms": 0.07275500756952355,
+        "voice440": 0.09983347730103653,
+        "music880": 0.024896469807000183
+      },
+      {
+        "at": 14.9,
+        "rms": 0.014000521194476952,
+        "voice440": 0.016624419156757973,
+        "music880": 0.004167463771972618
+      }
+    ],
+    "captionChecks": [
+      {
+        "at": 1,
+        "whitePixels": 9285
+      },
+      {
+        "at": 6,
+        "whitePixels": 9310
+      },
+      {
+        "at": 11,
+        "whitePixels": 9312
+      }
+    ],
+    "subtitleVisualReview": "See frame-1s.png; numeric checks alone do not prove caption layout",
+    "realSpeechSyncAccepted": false,
+    "cloudAccepted": false
+  },
+  "operations": [
+    {
+      "operation": "concat",
+      "runs": 20,
+      "wallMsMin": 152,
+      "wallMsMax": 403,
+      "wasmHeapMaxBytes": 33554432,
+      "trackedBytesAtArchiveMax": 55730969,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    },
+    {
+      "operation": "render-1",
+      "runs": 20,
+      "wallMsMin": 1932,
+      "wallMsMax": 3642,
+      "wasmHeapMaxBytes": 48365568,
+      "trackedBytesAtArchiveMax": 61879788,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    },
+    {
+      "operation": "render-2",
+      "runs": 20,
+      "wallMsMin": 1987,
+      "wallMsMax": 4015,
+      "wasmHeapMaxBytes": 48365568,
+      "trackedBytesAtArchiveMax": 61745732,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    },
+    {
+      "operation": "render-3",
+      "runs": 20,
+      "wallMsMin": 1884,
+      "wallMsMax": 3658,
+      "wasmHeapMaxBytes": 48365568,
+      "trackedBytesAtArchiveMax": 61492004,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    },
+    {
+      "operation": "final",
+      "runs": 20,
+      "wallMsMin": 574,
+      "wallMsMax": 1316,
+      "wasmHeapMaxBytes": 33554432,
+      "trackedBytesAtArchiveMax": 61771309,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    }
+  ],
+  "currentBuildProvenance": {
+    "createdAt": "2026-10-19T04:37:55.507Z",
+    "node": "v24.13.0",
+    "dependencies": {
+      "name": "@pi-studio/workers-p0",
+      "version": "0.0.1",
+      "private": true,
+      "type": "module",
+      "scripts": {
+        "prepare:core": "node scripts/prepare-core.mjs",
+        "prepare:font": "node scripts/font.mjs",
+        "build": "node scripts/build.mjs",
+        "check": "tsc --noEmit",
+        "fixtures": "node scripts/fixtures.mjs",
+        "test": "node --test --test-concurrency=1 test/*.test.mjs",
+        "bench": "node scripts/bench.mjs"
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "5.20261019.1",
+        "esbuild": "0.28.2",
+        "miniflare": "4.20260730.0",
+        "typescript": "7.0.2",
+        "wrangler": "4.151.1"
+      },
+      "dependencies": {
+        "@ffmpeg/core": "0.12.10"
+      }
+    },
+    "core": {
+      "package": "@ffmpeg/core",
+      "version": "0.12.10",
+      "license": "GPL-2.0-or-later",
+      "sourceRepository": "https://github.com/ffmpegwasm/ffmpeg.wasm",
+      "sourceRebuildVerified": false,
+      "upstreamJsSha256": "67a48f11645f85439f3fde4f2119042c16b374b910206b7a7a24f342e28dcae3",
+      "adaptedJsSha256": "4820a35a6c9c694891be3e25cc201b4691107d60e6f6c14375378939907f36d0",
+      "wasmSha256": "9f57947a5bd530d8f00c5b3f2cb2a3492faa7e5d823315342d6a8656d0a6b7b7",
+      "wasmBytes": 32232419,
+      "heapGrowthCapBytes": 100663296,
+      "patches": [
+        [
+          "scriptDirectory=self.location.href",
+          "scriptDirectory=\"https://p0.invalid/\""
+        ],
+        [
+          "function getHeapMax(){return 2147483648}",
+          "function getHeapMax(){return 100663296}"
+        ]
+      ],
+      "minimalBuild": false
+    },
+    "workerSha256": "8cca1b1a3b75b5346b8de249267e47375bc80b0294cf9d62b7501ecb0a3d7a5b",
+    "fixtureManifest": {
+      "kind": "synthetic-input-only",
+      "generator": "ffmpeg version 9.0.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers\r",
+      "font": "G:\\DevCache\\Temp\\pi-agent-hypite\\workers-p0\\font-source\\p0-subset.ttf",
+      "files": [
+        {
+          "name": "shot-1.mp4",
+          "bytes": 2542732,
+          "sha256": "11adfcf3e1773bbb04743e852049514daa229d78e5ece48878fd1c120904d891"
+        },
+        {
+          "name": "shot-2.mp4",
+          "bytes": 2470561,
+          "sha256": "28b29d1a7c7ab63620c574c56d5c21a0328717e75b779fdbf98cb5d5e5f92338"
+        },
+        {
+          "name": "shot-3.mp4",
+          "bytes": 2339823,
+          "sha256": "983d4efe42261eef1d6ef03472de2ee07a786d6a5fd45b396d1da52e2d7caa6d"
+        },
+        {
+          "name": "voice.wav",
+          "bytes": 2880078,
+          "sha256": "6f099dae3b5a58d168b618eded0d7a52ad8a32cffb73c21df4262ee56ae4a9c6"
+        },
+        {
+          "name": "music.wav",
+          "bytes": 2880078,
+          "sha256": "13738eaca7196f87da67b111356bccd269bfd7a409034b5e1f523d1729a71149"
+        },
+        {
+          "name": "font.ttf",
+          "bytes": 8416,
+          "sha256": "2c4cadb06e908909c77032916c5a558283859e0c53e9c64ab3da6cabfa12831b"
+        }
+      ]
+    }
+  },
+  "seriesEvidence": "G:\\DevCache\\Temp\\pi-agent-hypite\\workers-p0\\local-1792384404786",
+  "currentBuildEvidence": "G:\\DevCache\\Temp\\pi-agent-hypite\\workers-p0\\local-1792384675504",
+  "archive": "G:\\Projects\\Pi-Agent-Hypite\\output\\workers-p0\\2026-10-19",
+  "seriesProvenanceNote": "Series used the same media kernel before the final JSON-body admission guard. Current-build smoke reproduces identical final MP4 SHA-256; source provenance captured automatically for the current build.",
+  "metricsNote": "Wall time is not cloud CPU; tracked buffers exclude JS/code/R2 internals/transient copies. No measured total isolate peak. Synthetic dual-tone audio, not real speech sync.",
+  "remaining": [
+    "real Cloudflare media transformations",
+    "cloud rendering and 20-run resource gate",
+    "minimal single-thread source build and full license manifest",
+    "real model validation",
+    "real speech and representative product-video quality"
+  ]
+}

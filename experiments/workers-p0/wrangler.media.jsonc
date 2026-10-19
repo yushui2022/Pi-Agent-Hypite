@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pi-studio-media-p0",
+  "main": "dist/media/worker.js",
+  "compatibility_date": "2026-07-30",
+  "no_bundle": true,
+  "find_additional_modules": true,
+  "rules": [{ "type": "CompiledWasm", "globs": ["ffmpeg-core.wasm"], "fallthrough": true }],
+  "workers_dev": false,
+  "preview_urls": false,
+  "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "replace-with-p0-test-bucket" }],
+  "vars": { "P0_ENABLE_MEDIA": "false" },
+  "limits": { "cpu_ms": 300000 },
+  "observability": { "enabled": true }
+}

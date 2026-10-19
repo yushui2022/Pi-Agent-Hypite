@@ -1,5 +1,5 @@
 /* SaaS shell and creation surface. Shared controls live in components.css. */
-.saas-ui{display:block!important;min-height:100dvh;font-size:14px;line-height:1.6}
+.saas-ui{display:block!important;min-height:100dvh;font-size:14px;line-height:1.6;--sidebar-width:224px}
 .saas-ui [hidden]{display:none!important}
 .saas-ui :is(button,input,textarea,select){color:var(--ink);background:var(--surface)}
 .saas-ui button{border-radius:var(--radius-control);min-height:40px;transition:background .16s,border-color .16s,color .16s}
@@ -9,86 +9,82 @@
 .saas-ui button:disabled{cursor:not-allowed}
 .saas-ui .ui-icon{display:inline-block;width:20px;height:20px;flex-shrink:0;vertical-align:middle}
 .saas-ui .new-project,.saas-ui #create-project,.saas-ui #choose-reference{display:inline-flex;align-items:center;justify-content:center;gap:10px}
-.saas-ui .studio-sidebar{position:fixed;inset:0 auto 0 0;width:224px;background:var(--sidebar);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:28px 16px;z-index:3;overflow-y:auto}
-.studio-brand{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:650;letter-spacing:-.6px;text-decoration:none;color:var(--ink);padding:0 10px}
+.saas-ui .studio-sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar-width);background:var(--sidebar);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:26px 16px 16px;z-index:3;overflow-y:auto}
+.studio-brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:650;letter-spacing:-.6px;text-decoration:none;color:var(--ink);padding:0 10px}
 .brand-mark{color:var(--accent);font-size:32px;font-style:italic;line-height:1}
-.saas-ui .new-project{margin:30px 0 24px;width:100%}
-.studio-sidebar nav{display:flex;flex-direction:column;gap:5px}
-.studio-sidebar nav>a{display:flex;align-items:center;gap:12px;color:var(--muted);padding:11px 13px;border-radius:8px;text-decoration:none;font-size:14px;min-height:44px}
-.studio-sidebar nav>a>span{display:flex;align-items:center;justify-content:center}
-.studio-sidebar nav>a:hover,.studio-sidebar nav>a[aria-current=page]{background:var(--soft);color:var(--ink)}
-.studio-sidebar nav>a[aria-current=page]{font-weight:600}
-.studio-sidebar nav>a[aria-current=page]>span{color:var(--accent)}
-.studio-sidebar nav p{font-size:12px;color:var(--muted);margin:24px 14px 8px}
+.saas-ui .new-project{margin:30px 0 18px;width:100%;min-height:42px}
+:is(.studio-sidebar,.mobile-nav) nav{display:flex;flex-direction:column;gap:5px}
+:is(.studio-sidebar,.mobile-nav) nav>a{display:flex;align-items:center;gap:12px;color:var(--muted);padding:11px 13px;border-radius:8px;text-decoration:none;font-size:14px;min-height:44px}
+:is(.studio-sidebar,.mobile-nav) nav>a>span{display:flex;align-items:center;justify-content:center}
+:is(.studio-sidebar,.mobile-nav) nav>a:hover,:is(.studio-sidebar,.mobile-nav) nav>a[aria-current=page]{background:var(--soft);color:var(--ink)}
+:is(.studio-sidebar,.mobile-nav) nav>a[aria-current=page]{font-weight:600}
+:is(.studio-sidebar,.mobile-nav) nav>a[aria-current=page]>span{color:var(--accent)}
+:is(.studio-sidebar,.mobile-nav) nav p{font-size:11px;color:var(--muted);margin:22px 13px 7px;letter-spacing:.04em}
 .saas-ui .sidebar-bottom{display:block;width:100%;margin-top:auto;padding-top:40px}
-.space-note{font-size:12px;padding:16px 6px;border-block:1px solid var(--line);color:var(--ink)}
-.status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin:0 8px 2px 0}
-.space-note p{color:var(--muted);margin:4px 0 0 14px;font-size:12px}
 .saas-ui .theme-label{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:12px;padding:16px 3px;margin:0}
 .saas-ui #theme{width:100px}
+.saas-ui #nav-theme{width:160px;flex-shrink:0}
 .saas-ui .account-button{display:flex;align-items:center;gap:9px;background:transparent;border:0;padding:9px 0;width:100%;font-size:13px}
 .account-button>span:last-child{margin-left:auto}
 #account-name{min-width:0;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
 .avatar{display:grid;place-items:center;flex-shrink:0;width:30px;height:30px;border-radius:8px;background:var(--soft);color:var(--accent)}
 .saas-ui #logout{width:100%;font-size:12px;background:transparent;border:0;color:var(--muted)}
-.studio-shell{margin-left:224px}
-.saas-ui .studio-header{height:72px;padding:0 36px;display:flex;align-items:center;justify-content:space-between;border:0;font-size:13px}
+.studio-shell{margin-left:var(--sidebar-width)}
+.saas-ui .studio-header{height:68px;padding:0 36px;display:flex;align-items:center;justify-content:space-between;border:0;font-size:13px}
 .studio-header>div{display:flex;gap:18px;align-items:center;min-width:0}
-.beta-label{color:var(--muted);font-size:12px}
 .saas-ui #workspace-name{font-size:13px;color:var(--ink);max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.saas-ui #content{margin:0 auto;padding:20px 36px 48px;max-width:1440px;min-height:calc(100dvh - 149px)}
+.saas-ui #content{margin:0 auto;padding:24px 36px 48px;max-width:1440px;min-height:calc(100dvh - 149px)}
 .saas-ui footer{margin:0;padding:24px 36px;display:flex;justify-content:space-between;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
 /* Generated atmosphere is a decorative layer behind the live creation controls. */
 .studio-shell{position:relative;isolation:isolate}
-.saas-ui[data-page=home] .studio-shell::before{content:'';position:absolute;inset:0 0 auto;height:760px;z-index:-1;pointer-events:none;background-image:linear-gradient(var(--creation-shade),var(--creation-shade)),var(--creation-background);background-size:cover;background-position:center 30%;mask-image:linear-gradient(#000 0%,#000 45%,transparent 100%)}
+.saas-ui[data-page=home] .studio-shell::before{content:'';position:absolute;inset:0 0 auto;height:820px;z-index:-1;pointer-events:none;background-image:linear-gradient(var(--creation-shade),var(--creation-shade)),var(--creation-background);background-size:cover;background-position:center 30%;opacity:.65;mask-image:linear-gradient(#000 0%,#000 36%,transparent 100%)}
 .saas-ui[data-page=home] .studio-header{background:transparent}
-.creation-stage{max-width:900px;margin:0 auto;padding:8px 0 12px}
-.home-heading{text-align:center;margin:0 0 24px}
-.saas-ui .home-heading .eyebrow{color:var(--accent);font-size:11px;font-weight:600;letter-spacing:2px;margin:0 0 14px}
-.saas-ui .home-heading h1{font-size:34px;font-weight:550;letter-spacing:-1px;line-height:1.4;margin:0 0 12px;text-wrap:balance}
-.home-heading>p:last-child{font-size:14px;color:var(--ink);opacity:.8;margin:0}
-.composer{border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:16px 20px;box-shadow:var(--composer-shadow)}
+.creation-stage{max-width:1000px;margin:0 auto;padding:22px 0 10px}
+.home-heading{text-align:center;margin:0 0 32px}
+
+.saas-ui .home-heading h1{font-size:36px;font-weight:600;letter-spacing:-1px;line-height:1.4;margin:0 0 12px;text-wrap:balance}
+.home-heading>p:last-child{font-size:14px;color:var(--ink);opacity:1;margin:0}
+.composer{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:24px;box-shadow:var(--composer-shadow)}
 .composer-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
 .composer-title h2{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:550;margin:0}
 .composer-title h2 .ui-icon{width:17px;height:17px;color:var(--accent)}
 .composer-title>span{font-size:12px;color:var(--muted)}
-.composer-body{display:grid;grid-template-columns:174px minmax(0,1fr);gap:22px;align-items:start}
+.composer-body{display:grid;grid-template-columns:222px minmax(0,1fr);gap:28px;align-items:stretch}
 .saas-ui .reference-drop{position:relative;border:1px dashed var(--line);border-radius:12px;background:var(--canvas);overflow:hidden;transition:border-color .16s,background .16s}
 .saas-ui .reference-drop.is-dragging{border-color:var(--accent);background:var(--soft);outline:2px solid var(--accent);outline-offset:3px}
 .reference-drop:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:3px}
-.reference-empty{display:flex;align-items:center;justify-content:center;flex-direction:column;min-height:128px;padding:12px 8px;text-align:center}
-.upload-symbol{display:grid;place-items:center;width:32px;height:32px;color:var(--accent)}
+.reference-empty{display:flex;align-items:center;justify-content:center;flex-direction:column;min-height:158px;padding:16px 12px;text-align:center}
+.upload-symbol{display:grid;place-items:center;width:40px;height:40px;color:var(--accent);background:var(--soft);border-radius:10px;margin-bottom:8px}
 .upload-symbol .ui-icon{width:24px;height:24px}
-.reference-empty>span:last-child{font-size:11px;color:var(--muted)}
+.reference-empty>span:last-child{font-size:12px;color:var(--muted)}
 .saas-ui #choose-reference{min-height:38px;padding:4px 8px;border:0;background:transparent;font-size:13px}
 .saas-ui #choose-reference:hover{color:var(--accent);background:var(--soft)}
 .saas-ui .reference-drop.has-file{border-style:solid}
-#reference-preview{display:block;width:100%;height:116px;object-fit:contain;background:#131313}
+#reference-preview{display:block;width:100%;height:150px;object-fit:contain;background:#131313}
 .reference-file-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px;padding:8px;background:var(--soft)}
 .reference-file-row>div{grid-column:1/-1;min-width:0}
-.reference-file-row strong{display:block;font-size:11px;font-weight:550;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.reference-file-row #reference-status{display:block;font-size:10px;color:var(--muted);margin-top:3px;line-height:1.6}
+.reference-file-row strong{display:block;font-size:12px;font-weight:550;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.reference-file-row #reference-status{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
 .saas-ui .reference-file-row button{justify-self:start;background:transparent;border-color:transparent;padding:4px;font-size:12px;min-height:32px}
 .saas-ui .reference-file-row button:hover{background:var(--hover)}
 .saas-ui .icon-button{display:inline-flex;align-items:center;justify-content:center;width:32px;min-width:32px;padding:6px}
 .preview-error{font-size:11px;color:var(--warning);margin:0;padding:10px;background:var(--warning-bg)}
-.composer-brief{min-width:0}
-.saas-ui .brief-label{display:block;margin:2px 0 6px;font-weight:550;font-size:13px}
-.brief-label span{font-size:11px;color:var(--muted);font-weight:400;margin-left:6px}
-.saas-ui .composer textarea{margin:0;padding:6px 0;font-size:14px;resize:vertical;line-height:1.9;min-height:64px;max-height:240px;background:transparent;border:0;border-radius:4px;width:100%}
+.composer-brief{min-width:0;border-left:1px solid var(--line);padding-left:28px}
+.saas-ui .brief-label{display:block;margin:0 0 12px;font-weight:600;font-size:14px}
+.brief-label span{font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
+.saas-ui .composer textarea{margin:0;padding:6px 0;font-size:14px;resize:vertical;line-height:1.9;min-height:110px;max-height:240px;background:transparent;border:0;border-radius:4px;width:100%}
 .saas-ui .composer textarea::placeholder{color:var(--muted);opacity:1}
 .brief-suggestions{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
-.saas-ui .brief-suggestions button{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--line);background:transparent;border-radius:20px;padding:4px 9px;font-size:11px;min-height:30px;color:var(--muted)}
+.saas-ui .brief-suggestions button{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--line);background:transparent;border-radius:6px;padding:5px 9px;font-size:12px;min-height:34px;color:var(--muted)}
 .saas-ui .brief-suggestions button:hover{color:var(--ink);border-color:var(--accent);background:var(--soft)}
 .brief-suggestions .ui-icon{width:12px;height:12px}
-.composer-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
-.composer-hint{color:var(--muted);font-size:11px}
+.composer-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.composer-hint{color:var(--muted);font-size:12px}
 .composer-bottom button{padding:10px 16px;flex-shrink:0}
 .upload-feedback:not(:empty){border:1px solid var(--line);border-radius:8px;padding:14px 18px;background:var(--soft);margin-top:12px}
 .upload-feedback progress{width:100%;height:6px;accent-color:var(--accent)}
-.creation-caption{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:18px 6px 0;font-size:11px;color:var(--muted)}
-.creation-caption .status-dot{width:5px;height:5px;margin-right:6px}
-.saas-ui .creation-help{position:relative;flex-shrink:0;margin:0;padding:0;font-size:11px}
+.creation-caption{display:flex;justify-content:center;align-items:flex-start;gap:12px;margin:18px 6px 0;font-size:12px;color:var(--muted)}
+.saas-ui .creation-help{position:relative;flex-shrink:0;margin:0;padding:0;font-size:12px}
 .saas-ui .creation-help summary{padding:0;min-height:0}
 .creation-help summary{cursor:pointer;text-underline-offset:4px}
 .creation-help summary:hover{color:var(--accent)}
@@ -97,8 +93,8 @@
 .creation-help strong{color:var(--ink);font-weight:550;display:block;font-size:12px}
 .creation-help li span{font-size:12px;line-height:1.8}
 /* Continuation and starter requirements: actual projects or clearly labelled inputs. */
-.discovery,.recent-projects{margin-top:32px}
-.section-heading .section-kicker{font-size:10px;letter-spacing:1.6px;margin:0 0 7px;color:var(--muted)}
+.discovery,.recent-projects{margin:36px auto 0;max-width:1140px}
+
 .section-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 18px}
 .section-heading h1{font-size:26px}
 .section-heading h2{font-size:18px;font-weight:600;margin:0}
@@ -106,17 +102,17 @@
 .section-heading>a{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;color:var(--muted);font-size:13px;text-decoration:none}
 .section-heading>a:hover{color:var(--accent)}
 .section-heading>a .ui-icon{width:16px}
-.saas-ui .visual-label{position:absolute;left:12px;bottom:12px;padding:4px 8px;border-radius:4px;background:#19171eeF;color:#fff;font-size:11px;line-height:1.5;font-weight:400;pointer-events:none}
+
 .scenario-grid,.recent-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.saas-ui .scenario-card{display:flex;flex-direction:column;align-items:stretch;gap:0;text-align:left;padding:0;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-panel);overflow:hidden}
-.scenario-visual{display:block;position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--soft)}
+.saas-ui .scenario-card{display:flex;flex-direction:column;align-items:stretch;gap:0;text-align:left;padding:0;border:0;background:transparent;border-radius:var(--radius-panel);overflow:hidden}
+.scenario-visual{display:block;position:relative;width:100%;aspect-ratio:16/8.5;overflow:hidden;background:var(--soft);border-radius:12px}
 .scenario-visual img{display:block;width:100%;height:100%;object-fit:cover}
 @media(hover:hover) and (prefers-reduced-motion:no-preference){.scenario-visual img{transition:transform .28s ease}.scenario-card:hover .scenario-visual img{transform:scale(1.025)}}
-.saas-ui .scenario-card:hover{border-color:var(--accent);background:var(--soft)}
-.scenario-copy{display:flex;flex-direction:column;gap:5px;min-width:0;padding:16px 18px 18px}
+.saas-ui .scenario-card:hover{background:transparent}.saas-ui .scenario-card:hover .scenario-copy strong{color:var(--accent)}
+.scenario-copy{display:flex;flex-direction:column;gap:5px;min-width:0;padding:15px 2px 8px}
 .scenario-copy strong{font-size:15px;font-weight:550}
-.scenario-copy>span{font-size:12px;color:var(--muted);line-height:1.8}
-.scenario-copy small{font-size:12px;color:var(--accent);margin-top:8px;display:flex;gap:10px;align-items:center}
+.scenario-copy>span{font-size:13px;color:var(--muted);line-height:1.8}
+.scenario-copy small{font-size:12px;color:var(--muted);margin-top:3px;display:flex;gap:10px;align-items:center}
 .scenario-copy small .ui-icon{width:15px;height:15px}
 .recent-project{display:flex;align-items:center;gap:12px;border:1px solid var(--line);padding:18px 16px;text-decoration:none;color:var(--ink);border-radius:8px}
 .recent-project:hover{background:var(--soft);border-color:var(--accent)}
@@ -177,11 +173,11 @@
 .saas-ui .remix-preview h2{font-size:16px;margin:0;font-weight:550;overflow-wrap:anywhere}
 .saas-ui .remix-preview :is(video,img){display:block;border-radius:6px;max-height:360px;min-height:180px;object-fit:contain}
 .saas-ui .remix-preview p{font-size:12px;line-height:1.8}
-.saas-ui .remix-plan-head{padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-panel);align-items:start}
+.saas-ui .remix-plan-head{padding:0 0 24px;background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;align-items:start}
 .saas-ui .remix-plan-head label{margin:0}
 .saas-ui .remix-section-title h2{font-size:18px;margin:0 0 6px}
 .saas-ui .remix-section-title p{font-size:13px;line-height:1.8}
-.saas-ui .remix-slot{padding:20px 24px}
+.saas-ui .remix-slot{padding:20px 24px;border-color:var(--line)}
 .saas-ui .slot-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px}
 .saas-ui .slot-heading strong{font-size:13px;font-weight:550;color:var(--muted)}
 .saas-ui .slot-heading button{font-size:12px;min-height:30px;color:var(--muted);background:transparent;border-color:transparent}
@@ -195,11 +191,12 @@
 .saas-ui .panel.empty h2{font-size:18px}
 .saas-ui .panel.empty p{font-size:13px;line-height:1.8}
 
-@media(max-width:1200px){.saas-ui #content{padding-inline:24px}.creation-stage{padding-top:18px}.saas-ui .home-heading h1{font-size:30px}}
-@media(max-width:1000px){.saas-ui .studio-sidebar{width:194px;padding:24px 12px}.studio-shell{margin-left:194px}.saas-ui .studio-header{padding:0 24px}.composer-body{grid-template-columns:150px minmax(0,1fr);gap:16px}.composer{padding:18px}.composer-bottom{gap:12px}.composer-hint{max-width:160px}.creation-caption{flex-wrap:wrap}.scenario-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.recent-grid{grid-template-columns:minmax(0,1fr)}.scenario-copy{padding:16px}.saas-ui .remix-import{grid-template-columns:1fr}.saas-ui .remix-media-layout{grid-template-columns:1fr}.saas-ui .remix-preview{position:static}.saas-ui .remix-slot-top{grid-template-columns:repeat(2,minmax(0,1fr))}.saas-ui .remix-plan-head{grid-template-columns:1fr}}
-@media(max-width:760px){
-.saas-ui .studio-sidebar{position:static;width:auto;padding:18px 16px 12px;border-right:0;border-bottom:1px solid var(--line);display:block}.studio-brand{padding:0;font-size:21px}.saas-ui .new-project,.saas-ui .sidebar-bottom,.studio-sidebar nav p{display:none}.studio-sidebar nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:18px}.studio-sidebar nav>a{font-size:12px;gap:8px;padding:8px;justify-content:flex-start}.studio-sidebar nav .ui-icon{width:18px;height:18px}.studio-shell{margin:0}.saas-ui .studio-header{height:64px;padding:0 18px}.beta-label,.saas-ui #workspace-name{display:none}.saas-ui #mobile-account{display:block}.saas-ui #content{padding:12px 18px 32px}
-.creation-stage{padding-top:10px}.home-heading{margin:0 0 24px}.saas-ui .home-heading .eyebrow{font-size:10px;margin-bottom:12px}.saas-ui .home-heading h1{font-size:26px;letter-spacing:-.5px}.home-heading>p:last-child{font-size:12px;line-height:1.8}.composer{padding:16px;border-radius:16px}.composer-title{margin-bottom:14px}.composer-title>span{font-size:11px}.composer-body{grid-template-columns:minmax(0,1fr);gap:16px}.reference-empty{min-height:100px;padding:10px;flex-direction:row;flex-wrap:wrap;gap:6px}.reference-empty>span:last-child{flex-basis:100%;margin-top:-12px}.saas-ui #choose-reference{min-height:44px}.composer-bottom{flex-wrap:wrap;gap:12px}.composer-bottom button{width:100%;margin:0}.composer-hint{max-width:none}.creation-caption{font-size:10px;gap:10px}.creation-help ol{position:static;width:auto;padding-left:32px}.creation-help[open]{width:100%}.saas-ui .brief-suggestions button{min-height:38px;padding-inline:10px}.reference-file-row{grid-template-columns:minmax(0,1fr) auto auto;gap:4px}.reference-file-row>div{grid-column:auto}.reference-file-row #reference-status{font-size:11px}.saas-ui .reference-file-row button{min-height:44px}.reference-file-row strong{font-size:12px}#reference-preview{height:180px}
-.discovery,.recent-projects{margin-top:28px}.section-heading{align-items:flex-end;gap:12px}.section-heading>a{font-size:11px}.section-heading h2{font-size:17px}.section-heading p{font-size:12px;line-height:1.8}.section-heading .section-kicker{font-size:8px;letter-spacing:1px}.scenario-grid{grid-template-columns:minmax(0,1fr)}.scenario-copy{gap:6px;padding:18px}.scenario-copy small{margin-top:6px}.saas-ui footer{padding:20px 18px;font-size:12px}.saas-ui footer>span{display:none}.skip-link{left:12px}
-.saas-ui .remix-import,.saas-ui .remix-plan-head,.saas-ui .remix-batch,.saas-ui .remix-slot,.saas-ui .remix-preview{padding:18px}.saas-ui .account-tabs{gap:20px}.saas-ui .account-tabs button{font-size:13px}.saas-ui .remix-slot-top{gap:12px}.saas-ui .page-heading{flex-wrap:wrap;gap:12px}.saas-ui #remix-plan .account-save{gap:12px;font-size:12px}.saas-ui .remix-section-title{align-items:flex-start}.saas-ui .remix-section-title button{white-space:normal}.saas-ui .auth-card{padding:28px 24px}.saas-ui .auth-card h2{font-size:23px}}
+.reference-label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:12px}.reference-label h2{font-size:14px;font-weight:600;margin:0}.reference-label>span{font-size:12px;color:var(--muted)}
+.saas-ui #mobile-menu,.mobile-brand{display:none}.header-location{display:flex;align-items:center;gap:12px}.saas-ui .studio-header #page-label{font-size:13px;color:var(--muted)}.saas-ui #header-login{background:var(--surface);border-color:var(--line);font-size:13px;padding-inline:16px}
+.saas-ui .sidebar-toggle{display:flex;align-items:center;gap:12px;width:100%;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;color:var(--muted);font-size:12px;padding:14px 8px 2px;margin-top:14px}.sidebar-toggle .ui-icon{width:18px;height:18px}.saas-ui .account-button{border-top:1px solid var(--line);border-radius:0;padding-top:16px}
+.saas-ui .mobile-nav{margin:0;height:100dvh;max-height:100dvh;width:300px;max-width:calc(100vw - 32px);padding:24px 18px;border:0;border-right:1px solid var(--line);border-radius:0;background:var(--sidebar)}.mobile-nav-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.mobile-nav-heading .studio-brand{padding:0}.mobile-nav .theme-label{margin-top:30px;border-top:1px solid var(--line)}
+@media(min-width:761px){.saas-ui[data-sidebar=compact]{--sidebar-width:76px}.saas-ui[data-sidebar=compact] .studio-sidebar{padding-inline:12px}.saas-ui[data-sidebar=compact] .studio-sidebar :is(.nav-label,.brand-name,.theme-label,#account-name,.account-arrow,#logout){display:none}.saas-ui[data-sidebar=compact] .studio-sidebar nav p{font-size:0;height:1px;background:var(--line);margin:18px 8px 12px}.saas-ui[data-sidebar=compact] .studio-sidebar :is(.studio-brand,.new-project,nav>a,.account-button,.sidebar-toggle){justify-content:center;padding-inline:0}.saas-ui[data-sidebar=compact] .sidebar-toggle .ui-icon{transform:rotate(180deg)}}
+@media(max-width:1200px){.saas-ui #content{padding-inline:28px}.saas-ui .home-heading h1{font-size:32px}.composer-body{grid-template-columns:200px minmax(0,1fr);gap:22px}.composer-brief{padding-left:22px}}
+@media(max-width:1000px){.saas-ui{--sidebar-width:194px}.saas-ui .studio-sidebar{padding-inline:12px}.saas-ui .studio-header{padding:0 24px}.composer-body{grid-template-columns:170px minmax(0,1fr);gap:18px}.composer{padding:20px}.composer-brief{padding-left:18px}.composer-bottom{gap:12px}.composer-hint{max-width:170px}.scenario-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.recent-grid{grid-template-columns:minmax(0,1fr)}.saas-ui .remix-import,.saas-ui .remix-media-layout,.saas-ui .remix-plan-head{grid-template-columns:1fr}.saas-ui .remix-preview{position:static}.saas-ui .remix-slot-top{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.saas-ui{--sidebar-width:0px}.saas-ui .studio-sidebar{display:none}.saas-ui .studio-header{height:64px;padding:0 18px;border-bottom:1px solid var(--line)}.saas-ui #mobile-menu,.saas-ui #mobile-account{display:inline-flex}.mobile-brand{display:inline;color:var(--accent);font-size:24px;font-style:italic;font-weight:700}.header-location{gap:10px}.saas-ui #workspace-name{display:none}.saas-ui #content{padding:24px 18px 32px}.creation-stage{padding:4px 0 8px}.home-heading{margin-bottom:24px}.saas-ui .home-heading h1{font-size:26px;letter-spacing:-.5px}.home-heading>p:last-child{font-size:13px}.composer{padding:18px;border-radius:14px}.composer-body{grid-template-columns:minmax(0,1fr);gap:18px}.composer-brief{border-left:0;padding-left:0}.reference-empty{min-height:100px;padding:12px;flex-direction:row;flex-wrap:wrap;gap:6px}.upload-symbol{margin:0;width:32px;height:32px}.reference-empty>span:last-child{flex-basis:100%;margin-top:-8px}.saas-ui #choose-reference{min-height:44px}.saas-ui .composer textarea{min-height:78px}.composer-bottom{flex-wrap:wrap;gap:12px;margin-top:18px;padding-top:14px}.composer-bottom button{width:100%;margin:0}.composer-hint{max-width:none;font-size:11px}.creation-help ol{position:static;width:auto;padding-left:32px}.creation-help[open]{width:100%}.saas-ui .brief-suggestions button{min-height:38px;padding-inline:8px;font-size:11px}.reference-file-row{grid-template-columns:minmax(0,1fr) auto auto;gap:4px}.reference-file-row>div{grid-column:auto}.reference-file-row #reference-status{font-size:11px}.saas-ui .reference-file-row button{min-height:44px}#reference-preview{height:180px}.discovery,.recent-projects{margin-top:28px}.section-heading{gap:12px}.section-heading>a{font-size:12px}.section-heading h2{font-size:18px}.section-heading p{font-size:12px}.scenario-grid{grid-template-columns:minmax(0,1fr)}.saas-ui .discovery .scenario-card{display:grid;grid-template-columns:104px minmax(0,1fr);gap:16px;border-radius:0;padding:0 0 16px;border-bottom:1px solid var(--line)}.discovery .scenario-visual{height:116px;aspect-ratio:auto;border-radius:8px}.discovery .scenario-copy{justify-content:center;padding:0}.scenario-copy small{margin-top:4px}.saas-ui footer{padding:20px 18px;font-size:12px}.saas-ui footer>span{display:none}.skip-link{left:12px}.saas-ui .remix-import,.saas-ui .remix-batch,.saas-ui .remix-slot,.saas-ui .remix-preview{padding:18px}.saas-ui .account-tabs{gap:16px}.saas-ui .account-tabs button{font-size:13px}.saas-ui .remix-slot-top{gap:12px}.saas-ui .page-heading{flex-wrap:wrap;gap:12px}.saas-ui #remix-plan .account-save{gap:12px;font-size:12px}.saas-ui .remix-section-title{align-items:flex-start}.saas-ui .remix-section-title button{white-space:normal}.saas-ui .auth-card{padding:28px 24px}.saas-ui .auth-card h2{font-size:23px}}
 @media(prefers-reduced-motion:reduce){.saas-ui *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}

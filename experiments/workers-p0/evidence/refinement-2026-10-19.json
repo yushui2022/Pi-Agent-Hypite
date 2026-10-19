@@ -1,0 +1,464 @@
+{
+  "date": "2026-10-19",
+  "status": "minimal-core-and-input-matrix-locally-verified",
+  "cloudAccepted": false,
+  "productionReady": false,
+  "liveModelAccepted": false,
+  "repeatedRuns": 20,
+  "repeatedFinalSha256": "14e330b935db02572f76f3ae3b50af36215db3e66c18ff5420730b383f22d5f1",
+  "inputCases": 12,
+  "captionAdmissionCases": 5,
+  "core": {
+    "package": "pi-studio-minimal-media-core",
+    "version": "0.12.10",
+    "license": "GPL-2.0-or-later",
+    "sourceRepository": "https://github.com/ffmpegwasm/ffmpeg.wasm",
+    "sourceRebuildVerified": true,
+    "sourceManifest": {
+      "schema": "pi-studio.core-build.v1",
+      "createdAt": "2026-10-19T06:02:06.271502+00:00",
+      "sources": {
+        "emsdk": {
+          "url": "https://github.com/emscripten-core/emsdk.git",
+          "ref": "3.1.40",
+          "commit": "ae245715ef50e036b68a2412a323129676bf8300",
+          "license": "MIT / LLVM components"
+        },
+        "bindings": {
+          "url": "https://github.com/ffmpegwasm/ffmpeg.wasm.git",
+          "ref": "v0.12.10",
+          "commit": "c3a763857c5e615ae8674715ad5e4f63ff469e9d",
+          "license": "MIT wrapper; linked core GPL-2.0-or-later"
+        },
+        "ffmpeg": {
+          "url": "https://github.com/FFmpeg/FFmpeg.git",
+          "ref": "n5.1.4",
+          "commit": "4729204c17f756e186d622060088371d10b34f7e",
+          "license": "GPL-2.0-or-later with libx264 enabled"
+        },
+        "x264": {
+          "url": "https://github.com/ffmpegwasm/x264.git",
+          "ref": "4-cores",
+          "commit": "33cac6b77d5b9259c552156013a817ab23119612",
+          "license": "GPL-2.0-or-later"
+        },
+        "freetype": {
+          "url": "https://github.com/ffmpegwasm/freetype2.git",
+          "ref": "VER-2-10-4",
+          "commit": "6a2b3e4007e794bfc6c91030d0ed987f925164a8",
+          "license": "FTL or GPL-2.0-or-later"
+        }
+      },
+      "sourceRebuildVerified": true,
+      "minimalBuild": true,
+      "license": "GPL-2.0-or-later",
+      "emscripten": "3.1.40",
+      "cmake": "3.27.9",
+      "heapGrowthCapBytes": 100663296,
+      "initialMemoryBytes": 33554432,
+      "buildScriptSha256": "634020eaedb8ab12f8782f3c92f1c51be91c4b1531728d7ae80fff588d973d0e",
+      "probeSourceSha256": "19c5b62b90157b774ded2c16448e83992aa35fb53559c7bb54bdb4c54cc26aea",
+      "wasmSha256": "5d95caf4182fe73bae028b0a1fba22dd9b2aaceaefdca43fb6860b6d18a7d021",
+      "jsSha256": "2ed2390f2dff16a8fbcd5a0796495986d8e7e2aa5c23e055dfe2d395f70cdac3",
+      "wasmBytes": 5161617,
+      "configurationSha256": "4c570dd2b58d5a13688dc4566bf4f553237c5f00039fd60f6856d9ce2880692f",
+      "runtimeValidated": false,
+      "cloudAccepted": false
+    },
+    "upstreamJsSha256": "2ed2390f2dff16a8fbcd5a0796495986d8e7e2aa5c23e055dfe2d395f70cdac3",
+    "adaptedJsSha256": "92456ad5b6af0886cf30c84eea6586464aefc0682a1dc10a2a0cfed395344141",
+    "wasmSha256": "5d95caf4182fe73bae028b0a1fba22dd9b2aaceaefdca43fb6860b6d18a7d021",
+    "wasmBytes": 5161617,
+    "heapGrowthCapBytes": 100663296,
+    "declaredMemory": {
+      "initialBytes": 33554432,
+      "maximumBytes": 100663296,
+      "shared": false
+    },
+    "patches": [
+      [
+        "scriptDirectory=self.location.href",
+        "scriptDirectory=\"https://p0.invalid/\""
+      ]
+    ],
+    "minimalBuild": true
+  },
+  "wasmSize": {
+    "baselineBytes": 32232419,
+    "minimalBytes": 5161617,
+    "reductionPercent": 83.98625619752586
+  },
+  "operations": [
+    {
+      "operation": "concat",
+      "runs": 20,
+      "wallMsMin": 159,
+      "wallMsMax": 2017,
+      "wasmHeapMaxBytes": 33554432,
+      "trackedBytesAtArchiveMax": 55730969,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    },
+    {
+      "operation": "render-1",
+      "runs": 20,
+      "wallMsMin": 2094,
+      "wallMsMax": 6715,
+      "wasmHeapMaxBytes": 33554432,
+      "trackedBytesAtArchiveMax": 47068652,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    },
+    {
+      "operation": "render-2",
+      "runs": 20,
+      "wallMsMin": 2008,
+      "wallMsMax": 5137,
+      "wasmHeapMaxBytes": 33554432,
+      "trackedBytesAtArchiveMax": 46934596,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    },
+    {
+      "operation": "render-3",
+      "runs": 20,
+      "wallMsMin": 1973,
+      "wallMsMax": 5619,
+      "wasmHeapMaxBytes": 33554432,
+      "trackedBytesAtArchiveMax": 46680868,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    },
+    {
+      "operation": "final",
+      "runs": 20,
+      "wallMsMin": 684,
+      "wallMsMax": 2818,
+      "wasmHeapMaxBytes": 33554432,
+      "trackedBytesAtArchiveMax": 61771309,
+      "cloudCpuMs": null,
+      "totalIsolatePeakBytes": null
+    }
+  ],
+  "matrixCases": [
+    {
+      "case": "landscape-30",
+      "expectedAcceptance": true,
+      "httpStatus": 200,
+      "id": "matrix",
+      "operation": "normalize-1",
+      "name": "render-1.mp4",
+      "sha256": "982202727f0c93214a81763d7485b57de6e00950a8ed81439cf5ea74988d315d",
+      "outputBytes": 1168691,
+      "inputBytes": 9871848,
+      "inputMetadata": {
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "duration": 5,
+        "fps": 30,
+        "audioStreams": 0,
+        "pixelFormat": "yuv420p"
+      },
+      "caption": "清爽随行，开启轻盈一天\n现在入手，优惠 20%",
+      "startSeconds": 0,
+      "heapInitial": 33554432,
+      "heapFinal": 48365568,
+      "heapGrowthCapBytes": 100663296,
+      "outputMemfsCapacityBytes": 1179864,
+      "archiveCopyBytes": 1168691,
+      "trackedBytesAtArchive": 60585971,
+      "elapsedMs": 3124,
+      "cpuMs": null,
+      "totalIsolatePeakBytes": null,
+      "cost": null,
+      "measurementNote": "Wasm heap + known MEMFS inputs/output capacity + archive copy. Excludes JS heap, library code, R2 internals and transient reads; NOT total isolate peak or cloud CPU",
+      "kind": "wasm"
+    },
+    {
+      "case": "portrait-1080",
+      "expectedAcceptance": true,
+      "httpStatus": 200,
+      "id": "matrix",
+      "operation": "normalize-2",
+      "name": "render-2.mp4",
+      "sha256": "d9a71257b3c618e6b144774d21129b119633000801e8883a528c49344b77befe",
+      "outputBytes": 2058678,
+      "inputBytes": 12552463,
+      "inputMetadata": {
+        "codec": "h264",
+        "width": 1080,
+        "height": 1920,
+        "duration": 5,
+        "fps": 30,
+        "audioStreams": 0,
+        "pixelFormat": "yuv420p"
+      },
+      "caption": "自然质感，看得见的细节\n商品亮点，一目了然",
+      "startSeconds": 0,
+      "heapInitial": 33554432,
+      "heapFinal": 58064896,
+      "heapGrowthCapBytes": 100663296,
+      "outputMemfsCapacityBytes": 2064438,
+      "archiveCopyBytes": 2058678,
+      "trackedBytesAtArchive": 74740475,
+      "elapsedMs": 5111,
+      "cpuMs": null,
+      "totalIsolatePeakBytes": null,
+      "cost": null,
+      "measurementNote": "Wasm heap + known MEMFS inputs/output capacity + archive copy. Excludes JS heap, library code, R2 internals and transient reads; NOT total isolate peak or cloud CPU",
+      "kind": "wasm"
+    },
+    {
+      "case": "portrait-60-audio",
+      "expectedAcceptance": true,
+      "httpStatus": 200,
+      "id": "matrix",
+      "operation": "normalize-3",
+      "name": "render-3.mp4",
+      "sha256": "01e525b14d314667d83c82f945cf91b4ff79631ef81095676222b3b3b80dcb84",
+      "outputBytes": 2683539,
+      "inputBytes": 11538480,
+      "inputMetadata": {
+        "codec": "h264",
+        "width": 720,
+        "height": 1280,
+        "duration": 5,
+        "fps": 60,
+        "audioStreams": 1,
+        "pixelFormat": "yuv420p"
+      },
+      "caption": "为你的品牌，制作新版本\n十五秒，留下好印象",
+      "startSeconds": 0,
+      "heapInitial": 33554432,
+      "heapFinal": 48365568,
+      "heapGrowthCapBytes": 100663296,
+      "outputMemfsCapacityBytes": 2986051,
+      "archiveCopyBytes": 2683539,
+      "trackedBytesAtArchive": 65573638,
+      "elapsedMs": 2114,
+      "cpuMs": null,
+      "totalIsolatePeakBytes": null,
+      "cost": null,
+      "measurementNote": "Wasm heap + known MEMFS inputs/output capacity + archive copy. Excludes JS heap, library code, R2 internals and transient reads; NOT total isolate peak or cloud CPU",
+      "kind": "wasm"
+    },
+    {
+      "case": "small-seek",
+      "expectedAcceptance": true,
+      "httpStatus": 200,
+      "id": "matrix",
+      "operation": "normalize-1",
+      "name": "render-1.mp4",
+      "sha256": "c8013a40c629e162ae5cc6689119f4a2626426bc71f6e8dcb967e860538f9e0a",
+      "outputBytes": 1374714,
+      "inputBytes": 8455253,
+      "inputMetadata": {
+        "codec": "h264",
+        "width": 640,
+        "height": 360,
+        "duration": 8,
+        "fps": 24,
+        "audioStreams": 1,
+        "pixelFormat": "yuv420p"
+      },
+      "caption": "清爽随行，开启轻盈一天\n现在入手，优惠 20%",
+      "startSeconds": 2,
+      "heapInitial": 33554432,
+      "heapFinal": 48365568,
+      "heapGrowthCapBytes": 100663296,
+      "outputMemfsCapacityBytes": 1474614,
+      "archiveCopyBytes": 1374714,
+      "trackedBytesAtArchive": 59670149,
+      "elapsedMs": 1932,
+      "cpuMs": null,
+      "totalIsolatePeakBytes": null,
+      "cost": null,
+      "measurementNote": "Wasm heap + known MEMFS inputs/output capacity + archive copy. Excludes JS heap, library code, R2 internals and transient reads; NOT total isolate peak or cloud CPU",
+      "kind": "wasm"
+    },
+    {
+      "case": "high-profile-bframes",
+      "expectedAcceptance": true,
+      "httpStatus": 200,
+      "id": "matrix",
+      "operation": "normalize-2",
+      "name": "render-2.mp4",
+      "sha256": "947311386af818e86ed001612ec8289850c4261d07d0445e91fe55f288a64856",
+      "outputBytes": 1571224,
+      "inputBytes": 8614093,
+      "inputMetadata": {
+        "codec": "h264",
+        "width": 1080,
+        "height": 1920,
+        "duration": 5,
+        "fps": 30,
+        "audioStreams": 0,
+        "pixelFormat": "yuv420p"
+      },
+      "caption": "自然质感，看得见的细节\n商品亮点，一目了然",
+      "startSeconds": 0,
+      "heapInitial": 33554432,
+      "heapFinal": 69730304,
+      "heapGrowthCapBytes": 100663296,
+      "outputMemfsCapacityBytes": 1766143,
+      "archiveCopyBytes": 1571224,
+      "trackedBytesAtArchive": 81681764,
+      "elapsedMs": 5926,
+      "cpuMs": null,
+      "totalIsolatePeakBytes": null,
+      "cost": null,
+      "measurementNote": "Wasm heap + known MEMFS inputs/output capacity + archive copy. Excludes JS heap, library code, R2 internals and transient reads; NOT total isolate peak or cloud CPU",
+      "kind": "wasm"
+    },
+    {
+      "case": "too-short",
+      "expectedAcceptance": false,
+      "httpStatus": 422,
+      "error": "Input does not contain the requested five-second clip"
+    },
+    {
+      "case": "too-many-pixels",
+      "expectedAcceptance": false,
+      "httpStatus": 422,
+      "error": "Input exceeds the tested 1080p pixel budget"
+    },
+    {
+      "case": "too-long",
+      "expectedAcceptance": false,
+      "httpStatus": 422,
+      "error": "Input must have a known duration of at most 60 seconds"
+    },
+    {
+      "case": "non-h264",
+      "expectedAcceptance": false,
+      "httpStatus": 422,
+      "error": "Only H.264 video is supported"
+    },
+    {
+      "case": "ten-bit",
+      "expectedAcceptance": false,
+      "httpStatus": 422,
+      "error": "Only 8-bit input is currently supported"
+    },
+    {
+      "case": "rotated",
+      "expectedAcceptance": false,
+      "httpStatus": 422,
+      "error": "Rotated input requires prior normalization"
+    },
+    {
+      "case": "corrupt",
+      "expectedAcceptance": false,
+      "httpStatus": 422,
+      "error": "Invalid or damaged MP4"
+    }
+  ],
+  "normalizedFinal": {
+    "sha256": "22a993b3ecee3111ef0b5170fcd3ab63de288fb3ba88bc07607b90b6691ae517",
+    "bytes": 5815715,
+    "verification": {
+      "file": "final.mp4",
+      "verifiedBy": "native ffprobe/ffmpeg inspecting Worker output",
+      "duration": 15,
+      "videoStart": 0,
+      "audioStart": 0,
+      "frames": 375,
+      "width": 720,
+      "height": 1280,
+      "fps": "25/1",
+      "videoCodec": "h264",
+      "audioCodec": "aac",
+      "decodeErrors": 0,
+      "monotonicDts": true,
+      "minimumFrameLuma": 42.520089285714285,
+      "audioWindows": [
+        {
+          "at": 0,
+          "rms": 0.027923949782891536,
+          "voice440": 0.0333328798739241,
+          "music880": 0.008335003160963814
+        },
+        {
+          "at": 1,
+          "rms": 0.07288459194271316,
+          "voice440": 0.10004559394951226,
+          "music880": 0.02471988970673931
+        },
+        {
+          "at": 4.95,
+          "rms": 0.07269171957482652,
+          "voice440": 0.0997335240244408,
+          "music880": 0.02486828087144899
+        },
+        {
+          "at": 5,
+          "rms": 0.07277986589331954,
+          "voice440": 0.09983447782204685,
+          "music880": 0.024982432004617985
+        },
+        {
+          "at": 9.95,
+          "rms": 0.07277960865455152,
+          "voice440": 0.09986526371762337,
+          "music880": 0.02491208521183153
+        },
+        {
+          "at": 10,
+          "rms": 0.07283160175484914,
+          "voice440": 0.0999441539519436,
+          "music880": 0.024899896734633897
+        },
+        {
+          "at": 14.5,
+          "rms": 0.07275500756952355,
+          "voice440": 0.09983347730103653,
+          "music880": 0.024896469807000183
+        },
+        {
+          "at": 14.9,
+          "rms": 0.014000521194476952,
+          "voice440": 0.016624419156757973,
+          "music880": 0.004167463771972618
+        }
+      ],
+      "captionChecks": [
+        {
+          "at": 1,
+          "whitePixels": 6737
+        },
+        {
+          "at": 6,
+          "whitePixels": 7133
+        },
+        {
+          "at": 11,
+          "whitePixels": 6902
+        }
+      ],
+      "subtitleVisualReview": "See frame-1s.png; numeric checks alone do not prove caption layout",
+      "realSpeechSyncAccepted": false,
+      "cloudAccepted": false
+    }
+  },
+  "inputLimits": {
+    "videoBytes": 8388608,
+    "maxDimension": 1920,
+    "maxPixels": 2073600,
+    "maxDurationSeconds": 60,
+    "maxFps": 60,
+    "format": "8-bit H.264 MP4, no rotation metadata",
+    "caption": "max 2 lines / 15 characters per line; actual glyph coverage checked"
+  },
+  "seriesEvidence": "G:\\DevCache\\Temp\\pi-agent-hypite\\workers-p0\\local-1792390693299",
+  "matrixEvidence": "G:\\DevCache\\Temp\\pi-agent-hypite\\workers-p0\\matrix-1792390360679",
+  "archive": "G:\\Projects\\Pi-Agent-Hypite\\output\\workers-p0\\2026-10-19-refinement",
+  "metricsNote": "Known Wasm/MEMFS buffers only; not total isolate memory or Cloudflare CPU. Synthetic video and tones, not product-video quality or real speech.",
+  "remaining": [
+    "Cloudflare rendering/20-run resource gate",
+    "Cloudflare Media Transformations",
+    "real model/voice and product quality",
+    "100 MB upload and normalization",
+    "production cancellation/idempotency/tenant scheduling"
+  ]
+}

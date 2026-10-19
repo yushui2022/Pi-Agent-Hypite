@@ -1,5 +1,7 @@
 # Pi Studio · Pi Agent × Hypit
 
+当前云端实施路线已切换为 **Workers + Pi 核心 + 自研视频工程/执行**，允许 Cloudflare 基础媒体服务和外部模型 API，不部署容器、不将 Hypit 作为新 SaaS 运行依赖。先执行 [六阶段规划](docs/workers-execution-plan.md) 的 P0；[独立实验](experiments/workers-p0/README.md) 已完成精简源码 Wasm、本地 15 秒中文字幕/混音样片、12 组输入用例与连续 20 轮检查。真实 Cloudflare 验收尚未进行，详见 [最新 P0 报告](docs/workers-p0-refinement.md)。现有网页制作按钮仍保持未开放。
+
 面向参考视频复刻与批量改编的 Web SaaS 项目。当前支持账号与私有空间、参考视频导入预览、替换素材与方案、多批次计划，以及深浅主题创作界面。实际视频生成、Pi/Hypit 的 SaaS 执行、支付和公网部署尚未完成。
 
 Web 入口：Node.js 24+，运行 `npm ci` 后执行 `npm run saas:dev`，访问 http://127.0.0.1:4320 。前端在 `apps/saas-web`，API 在 `apps/saas-api`；静态构建为 `npm run saas:build`。部署配置见 [部署说明](deploy/saas/README.md)，当前能力与验证见 [进度](docs/progress.md) 和 [验收记录](docs/verification.md)。

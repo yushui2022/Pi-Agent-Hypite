@@ -1,0 +1,7 @@
+{
+  "emsdk": { "url": "https://github.com/emscripten-core/emsdk.git", "ref": "3.1.40", "commit": "ae245715ef50e036b68a2412a323129676bf8300", "license": "MIT / LLVM components" },
+  "bindings": { "url": "https://github.com/ffmpegwasm/ffmpeg.wasm.git", "ref": "v0.12.10", "commit": "c3a763857c5e615ae8674715ad5e4f63ff469e9d", "license": "MIT wrapper; linked core GPL-2.0-or-later" },
+  "ffmpeg": { "url": "https://github.com/FFmpeg/FFmpeg.git", "ref": "n5.1.4", "commit": "4729204c17f756e186d622060088371d10b34f7e", "license": "GPL-2.0-or-later with libx264 enabled" },
+  "x264": { "url": "https://github.com/ffmpegwasm/x264.git", "ref": "4-cores", "commit": "33cac6b77d5b9259c552156013a817ab23119612", "license": "GPL-2.0-or-later" },
+  "freetype": { "url": "https://github.com/ffmpegwasm/freetype2.git", "ref": "VER-2-10-4", "commit": "6a2b3e4007e794bfc6c91030d0ed987f925164a8", "license": "FTL or GPL-2.0-or-later" }
+}

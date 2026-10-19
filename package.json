@@ -9,6 +9,11 @@
   "scripts": {
     "saas:dev": "node apps/saas-api/server.mjs",
     "saas:build": "node scripts/build-saas-web.mjs",
+    "workers:p0:build": "npm --prefix experiments/workers-p0 run build",
+    "workers:p0:build:minimal": "npm --prefix experiments/workers-p0 run build:minimal",
+    "workers:p0:matrix": "npm --prefix experiments/workers-p0 run matrix",
+    "workers:p0:test": "npm --prefix experiments/workers-p0 test",
+    "workers:p0:bench": "npm --prefix experiments/workers-p0 run bench --",
     "start": "node apps/api/server.mjs",
     "doctor": "node scripts/doctor.mjs",
     "job": "node scripts/job.mjs",

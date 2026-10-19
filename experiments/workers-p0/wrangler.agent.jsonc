@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pi-studio-agent-p0",
+  "main": "dist/agent/worker.js",
+  "compatibility_date": "2026-07-30",
+  "no_bundle": true,
+  "find_additional_modules": false,
+  "workers_dev": false,
+  "preview_urls": false,
+  "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "replace-with-p0-test-bucket" }],
+  "vars": { "P0_MODEL_MODE": "disabled" },
+  "observability": { "enabled": true }
+}

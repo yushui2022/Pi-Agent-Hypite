@@ -1,8 +1,10 @@
 # Pi Studio 前端工作区
 
+2026-10-18 本轮升级：桌面导航支持收起，手机改为原生抽屉；首页明确参考视频与改编要求的层级；项目支持真实参考封面的卡片/列表视图；素材、任务、空状态、加载与四步详情导航采用统一组件。主题、筛选与未保存保护沿用现有逻辑。范围、验证及后续性能边界见 [前端升级记录](../../docs/frontend-refinement.md)。
+
 当前首页：内置 image_gen 生成深浅两套光影材质背景，作为整个创作区的 CSS 装饰层；紧凑的中央面板承载真实参考导入与要求输入，流程说明可展开，场景卡位于下方。主题令牌已改为铜橙/暖白体系。完整背景提示词见 assets/BACKGROUNDS.md，验收见 ../../docs/verification.md。下文保留此前迭代记录。
 
-图片资产更新：首页引导与场景卡使用 assets/ 下的原创 AI WebP 视觉，提供 480/960 宽 srcset；可见说明标记为 AI 视觉示意。原有 HTML 标题、按钮和预填交互保留。资源、尺寸和完整提示词见 assets/PROMPTS.md 与 image-manifest.json。
+图片资产更新：首页引导与场景卡使用 assets/ 下的原创 AI WebP 视觉，提供 480/960 宽 srcset；场景图作为创作入口插图，不作为项目成品展示；生成来源保存在资源清单和提示词记录中。原有 HTML 标题、按钮和预填交互保留。资源、尺寸和完整提示词见 assets/PROMPTS.md 与 image-manifest.json。
 
 最新精修：home.js 管理参考选择/拖放、本地视频预览及其 URL 清理、最近项目入口；icons.js 提供统一 SVG 图标。首页已移除原装饰横幅与概念海报，场景卡用于预填要求。app.js 负责路由/认证/导入，style.css 为页面布局，components.css 为共享控件。详情见 ../../docs/frontend-polish.md。新增文件同时进入 API 静态路由和构建清单，CSP 的 media-src 允许 blob: 本地预览。
 

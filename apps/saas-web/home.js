@@ -4,26 +4,25 @@ import {icon} from './icons.js';
 
 const size = bytes => bytes < 1048576 ? Math.ceil(bytes / 1024) + ' KiB' : (bytes / 1048576).toFixed(1) + ' MiB';
 export function scenarioCards(templates) {
-  return `<div class="scenario-grid">${templates.map((t, i) => `<button class="scenario-card" data-template="${i}" aria-labelledby="scenario-title-${i}" aria-describedby="scenario-desc-${i}"><span class="scenario-visual"><img src="/assets/scenario-${esc(t.art)}-960.webp" srcset="/assets/scenario-${esc(t.art)}-480.webp 480w, /assets/scenario-${esc(t.art)}-960.webp 960w" sizes="(max-width: 760px) calc(100vw - 36px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1440px) calc((100vw - 328px) / 3), 430px" width="960" height="640" loading="lazy" decoding="async" alt="${esc(t.name)}场景的 AI 视觉示意"><span class="visual-label">AI 视觉示意</span></span><span class="scenario-copy"><strong id="scenario-title-${i}">${t.name}</strong><span id="scenario-desc-${i}">${t.desc}</span><small>带入创作要求 ${icon('arrow')}</small></span></button>`).join('')}</div>`;
+  return `<div class="scenario-grid">${templates.map((t, i) => `<button class="scenario-card" data-template="${i}" aria-labelledby="scenario-title-${i}" aria-describedby="scenario-desc-${i}"><span class="scenario-visual"><img src="/assets/scenario-${esc(t.art)}-960.webp" srcset="/assets/scenario-${esc(t.art)}-480.webp 480w, /assets/scenario-${esc(t.art)}-960.webp 960w" sizes="(max-width: 760px) calc(100vw - 36px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1440px) calc((100vw - 328px) / 3), 430px" width="960" height="640" loading="lazy" decoding="async" alt="${esc(t.name)}场景插图"></span><span class="scenario-copy"><strong id="scenario-title-${i}">${t.name}</strong><span id="scenario-desc-${i}">${t.desc}</span><small>带入创作要求 ${icon('arrow')}</small></span></button>`).join('')}</div>`;
 }
 
 export function mountHome({root, draft, file, signedIn, templates, onFile, onDraft, onSubmit, isCurrent}) {
-  root.innerHTML = `<section class="creation-stage" aria-labelledby="creation-title"><div class="home-heading"><p class="eyebrow">PI STUDIO · 视频复刻</p><h1 id="creation-title">今天，想复刻什么灵感？</h1><p>从一条参考出发，用你的素材，延伸更多可能。</p></div>
+  root.innerHTML = `<section class="creation-stage" aria-labelledby="creation-title"><div class="home-heading"><h1 id="creation-title">今天，想复刻什么灵感？</h1><p>上传参考视频，规划你的下一批创作。</p></div>
       <form id="creation-form" class="composer">
-        <div class="composer-title"><h2>${icon('video')}视频复刻</h2><span>一份参考，多个版本</span></div>
         <div class="composer-body">
-        <div id="reference-drop" class="reference-drop">
+        <div class="reference-column"><div class="reference-label"><h2>参考视频</h2><span>必选</span></div><div id="reference-drop" class="reference-drop">
           <input id="reference-file" class="sr-only" type="file" accept=".mp4,.webm,.mov" aria-label="选择参考视频" aria-describedby="reference-help reference-error">
-          <div id="reference-empty" class="reference-empty"><span class="upload-symbol">${icon('plus')}</span><button type="button" id="choose-reference">添加参考视频</button><span>或拖放到这里</span></div>
+          <div id="reference-empty" class="reference-empty"><span class="upload-symbol">${icon('upload')}</span><button type="button" id="choose-reference">添加参考视频</button><span>也可直接拖入文件</span></div>
           <div id="reference-selected" hidden><video id="reference-preview" controls preload="metadata" playsinline aria-label="所选参考视频的本地预览"></video><div class="reference-file-row"><div><strong id="reference-name"></strong><span id="reference-status"></span></div><button type="button" id="replace-reference">更换</button><button type="button" id="remove-reference" class="icon-button" aria-label="移除已选参考视频">${icon('close')}</button></div><p id="preview-error" class="preview-error" hidden>浏览器无法预览此视频编码。仍可导入，或换用 H.264 MP4 / VP9 WebM。</p></div>
-        </div>
+        </div></div>
         <div class="composer-brief"><label class="brief-label" for="creation-prompt">你想怎样改编？ <span>选填</span></label><textarea id="creation-prompt" maxlength="2000" rows="2" placeholder="保留喜欢的镜头与节奏，换上你的商品、故事或文案…">${esc(draft)}</textarea><div class="brief-suggestions" role="group" aria-label="添加常用复刻要求"><button type="button" data-brief="替换为我的商品素材。">${icon('plus')}替换商品</button><button type="button" data-brief="调整字幕与结尾文案。">${icon('plus')}调整文案</button><button type="button" data-brief="保留参考视频的镜头节奏。">${icon('plus')}保留节奏</button></div></div>
         </div><p id="reference-error" class="form-error" role="alert" hidden></p>
-        <div class="composer-bottom"><span class="composer-hint" id="reference-help">MP4、WebM、MOV · 最多 512 MiB</span><button id="create-project" class="primary">导入并开始复刻 ${icon('arrow')}</button></div>
+        <div class="composer-bottom"><span class="composer-hint" id="reference-help">MP4、WebM、MOV · 最多 512 MiB</span><button id="create-project" class="primary">创建复刻项目 ${icon('arrow')}</button></div>
       </form><div class="upload-feedback" id="upload-feedback" role="status"></div>
-      <div class="creation-caption"><span><span class="status-dot"></span>素材与批次准备已开放 · 视频生成接入中</span><details class="creation-help"><summary>了解复刻流程</summary><ol><li><strong>导入参考</strong><span>预览视频，记录想保留的画面与节奏。</span></li><li><strong>配置替换</strong><span>添加自己的素材与文案，标注替换位置。</span></li><li><strong>安排批次</strong><span>为不同素材组合保存独立版本，等待制作。</span></li></ol></details></div>
+      <div class="creation-caption"><details class="creation-help"><summary>了解复刻流程</summary><ol><li><strong>导入参考</strong><span>预览视频，记录想保留的画面与节奏。</span></li><li><strong>配置替换</strong><span>添加自己的素材与文案，标注替换位置。</span></li><li><strong>安排批次</strong><span>为不同素材组合保存独立版本。</span></li></ol></details></div>
     </section>
-    <section class="discovery"><div class="section-heading"><div><p class="section-kicker">MADE FOR YOUR NEXT IDEA</p><h2>让灵感，有更多版本</h2></div><a href="#templates">探索复刻场景 ${icon('arrow')}</a></div>${scenarioCards(templates)}</section>
+    <section class="discovery"><div class="section-heading"><div><h2>从一个场景开始</h2><p>选择方向，带入改编要求。</p></div><a href="#templates">全部场景 ${icon('arrow')}</a></div>${scenarioCards(templates)}</section>
     ${signedIn ? '<section class="recent-projects" aria-labelledby="recent-title"><div class="section-heading"><h2 id="recent-title">继续你的项目</h2><a href="#remix">查看全部项目</a></div><div id="recent-list" role="status"></div></section>' : ''}`;
   const $ = selector => root.querySelector(selector);
   let selected = file, objectURL = null, disposed = false, dragDepth = 0;
@@ -92,7 +91,7 @@ export function mountHome({root, draft, file, signedIn, templates, onFile, onDra
   });
   $('#creation-form').onsubmit = event => {
     event.preventDefault();
-    if (!selected) { reject('请先选择一条参考视频，再开始复刻。'); $('#choose-reference').focus(); return; }
+    if (!selected) { reject('请先选择一条参考视频，再创建项目。'); $('#choose-reference').focus(); return; }
     $('#reference-preview').pause();
     onSubmit();
   };

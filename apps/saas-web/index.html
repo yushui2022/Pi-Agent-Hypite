@@ -1,6 +1,47 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Pi Studio：参考视频改编、私有素材与多批次创作空间。"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><title>Pi Studio · 视频复刻工作台</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/tokens.css"><link rel="stylesheet" href="/saas.css"><link rel="stylesheet" href="/components.css"></head>
-<body class="workspace-ui saas-ui"><a class="skip-link" href="#content">跳到主要内容</a><aside class="studio-sidebar"><a class="studio-brand" href="#home"><span class="brand-mark">Pi</span>Pi Studio</a><button class="primary new-project" data-go="#home"><span data-icon="plus"></span>开始复刻</button><nav aria-label="主导航"><a href="#home" data-route="home"><span data-icon="home"></span>开始复刻</a><a href="#remix" data-route="remix"><span data-icon="folder"></span>复刻项目</a><a href="#assets" data-route="assets"><span data-icon="media"></span>替换素材库</a><a href="#tasks" data-route="tasks"><span data-icon="tasks"></span>制作任务</a><a href="#works" data-route="works"><span data-icon="video"></span>成品库</a><p>参考与方案</p><a href="#templates" data-route="templates"><span data-icon="grid"></span>复刻场景</a></nav><div class="sidebar-bottom"><div class="space-note"><span class="status-dot"></span>创作准备已开放<p>真实生成服务接入中</p></div><label class="theme-label">外观<select id="theme"><option value="dark">深色</option><option value="light">浅色</option><option value="system">跟随系统</option></select></label><button id="account-button" class="account-button"><span class="avatar">P</span><span id="account-name">登录你的空间</span><span>↗</span></button><button id="logout" hidden>退出登录</button></div></aside>
-<div class="studio-shell"><header class="studio-header"><span id="page-label">开始复刻</span><div><span class="beta-label">创作预览版</span><button id="header-login" class="primary">登录 / 注册</button><button id="mobile-account" hidden>我的账号</button><span id="workspace-name" hidden></span></div></header><main id="content" tabindex="-1" aria-live="polite"></main><footer>Pi Studio · 让创作有序发生 <span>素材与项目仅对所属空间可见</span></footer></div>
-<dialog id="auth-view" class="auth-card"><button id="auth-close" class="dialog-close" aria-label="关闭登录">×</button><p class="eyebrow">PI STUDIO</p><h2 id="auth-title">登录创作空间</h2><p class="muted">保存素材、项目和每一次创作计划。</p><form id="auth-form"><label id="name-label" hidden>昵称<input name="name" maxlength="80" autocomplete="nickname"></label><label>邮箱<input name="email" type="email" required maxlength="254" autocomplete="username"></label><label>密码<input name="password" type="password" required minlength="10" maxlength="128" autocomplete="current-password" placeholder="至少 10 个字符"></label><p id="auth-error" class="error" role="alert"></p><button id="auth-submit" class="primary">登录</button></form><button id="auth-toggle" class="text-button">还没有账号？创建空间</button><p class="muted auth-note">预览版暂不提供邮箱验证和密码找回，请保存好账号信息。</p></dialog><dialog id="account-dialog"><h2>我的账号</h2><p id="account-email"></p><label class="mobile-theme">外观<select id="account-theme"><option value="dark">深色</option><option value="light">浅色</option><option value="system">跟随系统</option></select></label><button id="account-logout">退出登录</button><button id="account-close">关闭</button></dialog>
-<div id="message" role="status" hidden></div><dialog id="leave-dialog"><h2>离开当前编辑？</h2><p>离开会丢弃尚未保存的内容。</p><button id="stay">继续编辑</button><button id="discard">丢弃并离开</button></dialog><script type="module" src="/saas.js"></script></body></html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Pi Studio：参考视频改编、私有素材与多批次创作空间。">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"><title>Pi Studio · 视频复刻工作台</title>
+  <link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/tokens.css"><link rel="stylesheet" href="/saas.css"><link rel="stylesheet" href="/components.css">
+</head>
+<body class="workspace-ui saas-ui">
+  <a class="skip-link" href="#content">跳到主要内容</a>
+  <aside class="studio-sidebar" id="studio-sidebar">
+    <a class="studio-brand" href="#home" aria-label="Pi Studio 首页"><span class="brand-mark">Pi</span><span class="brand-name">Pi Studio</span></a>
+    <button class="primary new-project" data-go="#home" aria-label="新建复刻项目" title="新建复刻项目"><span data-icon="plus"></span><span class="nav-label">新建复刻</span></button>
+    <nav aria-label="主导航">
+      <a href="#home" data-route="home" title="开始复刻"><span data-icon="home"></span><span class="nav-label">开始复刻</span></a>
+      <p>创作空间</p>
+      <a href="#remix" data-route="remix" title="复刻项目"><span data-icon="folder"></span><span class="nav-label">复刻项目</span></a>
+      <a href="#assets" data-route="assets" title="替换素材库"><span data-icon="media"></span><span class="nav-label">替换素材库</span></a>
+      <a href="#tasks" data-route="tasks" title="制作任务"><span data-icon="tasks"></span><span class="nav-label">制作任务</span></a>
+      <a href="#works" data-route="works" title="成品库"><span data-icon="video"></span><span class="nav-label">成品库</span></a>
+      <p>灵感与参考</p>
+      <a href="#templates" data-route="templates" title="复刻场景"><span data-icon="grid"></span><span class="nav-label">复刻场景</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <label class="theme-label">外观<select id="theme"><option value="dark">深色</option><option value="light">浅色</option><option value="system">跟随系统</option></select></label>
+      <button id="account-button" class="account-button" title="我的创作空间"><span class="avatar">P</span><span id="account-name">登录你的空间</span><span class="account-arrow">↗</span></button>
+      <button id="logout" hidden>退出登录</button>
+      <button id="sidebar-toggle" class="sidebar-toggle" aria-expanded="true" aria-controls="studio-sidebar" aria-label="收起导航" title="收起导航"><span data-icon="panel"></span><span class="nav-label">收起导航</span></button>
+    </div>
+  </aside>
+  <div class="studio-shell">
+    <header class="studio-header"><div class="header-location"><button id="mobile-menu" class="icon-button" aria-label="打开导航" aria-controls="mobile-nav" aria-expanded="false"><span data-icon="menu"></span></button><span class="mobile-brand" aria-label="Pi Studio">Pi</span><span id="page-label">开始复刻</span></div><div><button id="header-login">登录 / 注册</button><button id="mobile-account" hidden>我的账号</button><span id="workspace-name" hidden></span></div></header>
+    <main id="content" tabindex="-1" aria-live="polite"></main>
+    <footer>Pi Studio <span>素材与项目仅对所属空间可见</span></footer>
+  </div>
+  <dialog id="mobile-nav" class="mobile-nav" aria-label="导航菜单">
+    <div class="mobile-nav-heading"><a class="studio-brand" href="#home"><span class="brand-mark">Pi</span>Pi Studio</a><button id="mobile-nav-close" class="icon-button" aria-label="关闭导航"><span data-icon="close"></span></button></div>
+    <button class="primary new-project" data-go="#home"><span data-icon="plus"></span>新建复刻</button><div id="mobile-nav-links"></div>
+    <label class="theme-label">外观<select id="nav-theme"><option value="dark">深色</option><option value="light">浅色</option><option value="system">跟随系统</option></select></label>
+  </dialog>
+  <dialog id="auth-view" class="auth-card" aria-labelledby="auth-title"><button id="auth-close" class="dialog-close" aria-label="关闭登录">×</button><h2 id="auth-title">登录创作空间</h2><p class="muted">保存素材、项目和每一次创作计划。</p><form id="auth-form"><label id="name-label" hidden>昵称<input name="name" maxlength="80" autocomplete="nickname"></label><label>邮箱<input name="email" type="email" required maxlength="254" autocomplete="username"></label><label>密码<input name="password" type="password" required minlength="10" maxlength="128" autocomplete="current-password" placeholder="至少 10 个字符"></label><p id="auth-error" class="error" role="alert"></p><button id="auth-submit" class="primary">登录</button></form><button id="auth-toggle" class="text-button">还没有账号？创建空间</button><p class="muted auth-note">暂不支持密码找回，请妥善保存密码。</p></dialog>
+  <dialog id="account-dialog" aria-labelledby="account-title"><h2 id="account-title">我的账号</h2><p id="account-email"></p><label class="mobile-theme">外观<select id="account-theme"><option value="dark">深色</option><option value="light">浅色</option><option value="system">跟随系统</option></select></label><button id="account-logout">退出登录</button><button id="account-close">关闭</button></dialog>
+  <div id="message" role="status" hidden></div>
+  <dialog id="leave-dialog" aria-labelledby="leave-title"><h2 id="leave-title">离开当前编辑？</h2><p>离开会丢弃尚未保存的内容。</p><button id="stay">继续编辑</button><button id="discard">丢弃并离开</button></dialog>
+  <script type="module" src="/saas.js"></script>
+</body>
+</html>

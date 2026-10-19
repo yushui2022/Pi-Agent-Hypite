@@ -1,0 +1,27 @@
+{
+  "name": "@pi-studio/workers-p0",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare:core": "node scripts/prepare-core.mjs",
+    "prepare:font": "node scripts/font.mjs",
+    "build": "node scripts/build.mjs",
+    "build:minimal": "node scripts/build.mjs --core minimal",
+    "matrix": "node scripts/matrix.mjs",
+    "check": "tsc --noEmit",
+    "fixtures": "node scripts/fixtures.mjs",
+    "test": "node --test --test-concurrency=1 test/*.test.mjs",
+    "bench": "node scripts/bench.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261019.1",
+    "esbuild": "0.28.2",
+    "miniflare": "4.20260730.0",
+    "typescript": "7.0.2",
+    "wrangler": "4.151.1"
+  },
+  "dependencies": {
+    "@ffmpeg/core": "0.12.10"
+  }
+}
