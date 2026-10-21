@@ -74,7 +74,7 @@ try {
     const body = await json(response, 200);
     assert.match(body.user.workspaceId, /^[a-f0-9-]{36}$/);
     cookieA = cookieOf(response);
-    assert.ok(cookieA.startsWith('pi_session='), cookieA);
+    assert.ok(cookieA.startsWith('pi_saas_session='), cookieA);
     const counts = await Promise.all(['users', 'workspaces', 'memberships', 'sessions'].map(async table =>
       (await db.prepare(`SELECT count(*) AS n FROM ${table}`).first()).n));
     assert.deepEqual(counts, [1, 1, 1, 1]);
@@ -118,7 +118,7 @@ try {
   });
 
   await verify('登出后旧 Cookie 失效，该会话记录被删除', async () => {
-    const token = cookieA.slice('pi_session='.length);
+    const token = cookieA.slice('pi_saas_session='.length);
     const digest = createHash('sha256').update(token).digest('hex');
     const before = (await db.prepare('SELECT count(*) AS n FROM sessions').first()).n;
     assert.ok(await db.prepare('SELECT 1 AS x FROM sessions WHERE token_hash=?').bind(digest).first(), '登出前应存在该会话');
@@ -129,7 +129,7 @@ try {
   });
 
   await verify('伪造与过期的令牌都被拒绝', async () => {
-    await json(await call('/api/session', { cookie: 'pi_session=' + 'b'.repeat(64) }), 401);
+    await json(await call('/api/session', { cookie: 'pi_saas_session=' + 'b'.repeat(64) }), 401);
     const login = await call('/api/auth/login', { method: 'POST', body: { email: 'a@example.test', password: 'correct-horse-9' } });
     const cookie = cookieOf(login);
     await db.prepare('UPDATE sessions SET expires_at=?').bind(Date.now() - 1000).run();

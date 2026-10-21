@@ -169,7 +169,8 @@ export async function logout(db: D1Database, token: string): Promise<void> {
   await db.prepare('DELETE FROM sessions WHERE token_hash=?').bind(await tokenDigest(token)).run();
 }
 
-export const SESSION_COOKIE = 'pi_session';
+// Same cookie name as the local server so one frontend works against either backend.
+export const SESSION_COOKIE = 'pi_saas_session';
 
 export function readSessionToken(request: Request): string {
   const cookie = request.headers.get('Cookie') ?? '';

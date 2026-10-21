@@ -1,3 +1,12 @@
+# 2026-10-20 生产 Worker 入口验证
+
+- `npm run verify:worker-api`：10/10 通过。脚本用 esbuild 打包**真实生产入口** `apps/saas-worker/src/index.ts`，在本地 workerd 启动，不是专用测试桩。
+- 覆盖：类型检查与打包（产物不含 Node 存储、vendor、Pi CLI 或 Hypit）；`/healthz`；未登录 401；注册返回与本地后端同形状的用户并下发 `pi_saas_session`；跨 Origin 写请求 403；项目创建/列表/详情；上传授权返回签名 URL 且键带本项目前缀；**确认前项目里没有素材，确认后才登记**；素材鉴权读取且字节哈希一致、匿名 401；保存方案与检查可用且 `execute` 仍 409；另一空间看不到该项目、也不能替它申请上传。
+- 回归：`verify:session` 18/18、`verify:migration` 9/9、`verify:r2` 5/5（真实 R2 桶）、`npm test` 51/51。
+- 修复：生产入口曾导出 `SESSION_COOKIE_NAME` 常量，workerd 把每个导出当处理器，启动即失败；已移除。
+- 未验证：真实部署、浏览器中的直传（CORS 预检、100 MB 大文件、断网重试）。前端只做了 `node --check` 与 `npm run saas:build`。
+
+
 # 2026-10-20 真实 R2 验收（首个离开本机的验证）
 
 - `npm run verify:r2`：5/5 通过，针对真实 Cloudflare R2 桶，非本地模拟。

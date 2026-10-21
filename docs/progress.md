@@ -1,3 +1,18 @@
+# 最近实施：2026-10-20 生产 Worker 入口 + 部署配置 + 前端直传
+
+上云前三件事完成。
+
+**生产入口** `apps/saas-worker/src/index.ts`：把本地 `apps/saas-api` 的路由搬成 Workers fetch handler，复用同一套 `packages/remix/service.mjs`，所以两个后端行为一致。差别只在上传：云端走 `POST /api/uploads` → 浏览器直传 → `complete`，本地保留 begin/chunk/finish。
+
+**部署配置** `apps/saas-worker/wrangler.jsonc` + `README.md`：D1/R2 绑定、静态资源目录、五个部署步骤、以及**必须配的 R2 CORS**（浏览器直传的预检要放行 `x-amz-checksum-sha256`，否则上传必失败）。
+
+**前端直传** `apps/web/upload-transport.js`：先试 `POST /api/uploads`，遇到 404/405 自动回落到分片上传。`reference-upload.js` 与项目内多文件导入都改用它，本地开发服务器照旧可用。
+
+顺带修的两处一致性问题：Cookie 名统一为 `pi_saas_session`（原先 Worker 用 `pi_session`，前端只认前者）；生产入口不能导出非 handler 的值，否则 workerd 启动即报错。
+
+验证：新增 `npm run verify:worker-api` 10 项（在本地 workerd 起**真实生产入口**）；`verify:session` 18/18、`verify:migration` 9/9、`verify:r2` 5/5、`npm test` 51/51 均未回归。**前端直传路径未在浏览器中实测**，只做了语法与构建检查。
+
+
 # 最近实施：2026-10-20 真实 R2 验收通过
 
 首次离开本机运行：`npm run verify:r2` 对真实 Cloudflare R2 桶完成 5 项验收并全部通过。

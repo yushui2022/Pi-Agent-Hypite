@@ -52,6 +52,7 @@ export interface AuthorizedUpload {
 }
 
 export interface CompletedAsset {
+  projectId: string;
   assetId: string;
   name: string;
   mime: string;
@@ -151,6 +152,7 @@ export async function completeUpload(
 
   await db.prepare("UPDATE uploads SET state='complete' WHERE id=? AND workspace_id=?").bind(uploadId, workspaceId).run();
   return {
+    projectId: row.project_id,
     assetId: row.asset_id,
     name: row.name,
     mime: row.mime,
