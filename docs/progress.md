@@ -1,3 +1,14 @@
+# 最近实施：2026-10-20 R2 直传签名（本地可验部分）
+
+`packages/cloudflare-storage/sigv4.ts`：AWS SigV4 预签名 URL（R2 的 S3 兼容端点），Web Crypto 实现，Worker 可直接运行。上传体积不进 Worker，payload 固定 `UNSIGNED-PAYLOAD`，因此 100 MB 素材不需要缓冲。
+
+附加头（如 `x-amz-checksum-sha256`、`content-type`）参与签名，客户端无法省略——这是把校验和变成**强制**而不是信任的唯一办法。实践中 Worker 不能读整个文件算哈希，必须依赖 R2 原生校验和（`object.checksums.sha256`，`r2.ts` 已在读）。
+
+**边界**：本地 workerd 只有 R2 binding，没有 S3 端点，所以签出来的 URL 在本地无处可验。本轮只验证编码、边界、确定性与「与独立实现逐字节一致」，真实桶仍是验收条件。
+
+`npm test` 51/51（新增 7 项）。下一步：上传授权与完成确认（D1 `uploads` 表 + R2 HEAD 复核）。
+
+
 # 最近实施：2026-10-20 Worker 账号与会话
 
 补齐云端登录，替换实验里两个写死的测试身份。`packages/cloudflare-storage/session.ts` 提供注册、登录、登出、会话识别与 Cookie，身份只从服务端会话构造，从不接受请求体里的 workspaceId。

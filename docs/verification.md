@@ -1,3 +1,12 @@
+# 2026-10-20 R2 直传签名验证
+
+- `npm test`：51/51 通过（新增 7 项 SigV4 测试）；`tsc -p experiments/workers-storage/tsconfig.json` 通过。
+- 与独立实现（`test/sigv4.test.mjs` 内用 node:crypto 按规范另写一份）在 7 组输入上逐字节一致：普通键、含空格与中文的键、短有效期、带会话令牌、GET、单附加头、双附加头。
+- 断言 payload 恒为 `UNSIGNED-PAYLOAD`，规范化请求不覆盖自身签名；附加头参与 `X-Amz-SignedHeaders` 且拒绝覆盖 `host` 与 `X-Amz-Signature`。
+- 边界：有效期 1 秒–7 天、带路径端点、绝对键、非法桶名均被拒绝；同一时刻签名确定，时间变化则签名变化。
+- **未验证**：签出的 URL 是否被 R2 接受。本地 workerd 只提供 R2 binding，没有 S3 端点，此项必须由真实桶验收。
+- 未连接云账号，未上传任何对象，无费用。
+
 # 2026-10-20 Worker 账号与会话验证
 
 - `npm run verify:session`：11/11 通过（本地 workerd）。TypeScript 与纯 Worker 构建通过；未配置测试标记时入口返回 503。
