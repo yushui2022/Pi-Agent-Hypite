@@ -146,6 +146,17 @@ try {
     await json(await call(`/api/remix/${projectId}/execute`, { method: 'POST', cookie, body: {} }), 409);
   });
 
+  await verify('生成服务状态可读，未配置时探测被明确拒绝', async () => {
+    const status = await json(await call('/api/providers', { cookie }), 200);
+    assert.equal(status.tokensFactory.configured, false, '本地测试未配置密钥');
+    assert.equal(status.autoDL.configured, false);
+    assert.equal(status.tokensFactory.chatModel, 'gemini-3.8-flash');
+    assert.equal(status.autoDL.workflowDefault, 'minimax_h3_zm_u24');
+    assert.equal(status.autoDL.workflowFast, 'minimax_h3_zm_u08');
+    await json(await call('/api/providers/probe', { method: 'POST', cookie }), 409);
+    await json(await call('/api/providers', { cookie: '' }), 401);
+  });
+
   await verify('另一空间看不到该项目，也不能为它申请上传', async () => {
     const other = await call('/api/auth/register', { method: 'POST', body: { email: 'b@example.test', password: 'correct-horse-9', name: '乙' } });
     const cookieB = cookieOf(other);

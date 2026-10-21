@@ -57,6 +57,21 @@ try {
     return { email, workspace: body.user.workspace_name };
   });
 
+  await check('生成服务已配置且连通性可用（不产生生成费用）', async () => {
+    const status = await expect(await api('/api/providers'), 200);
+    if (!status.tokensFactory.configured) throw new Error('TokensFactory 未配置');
+    if (!status.autoDL.configured) throw new Error('AutoDL 未配置');
+    const probe = await expect(await api('/api/providers/probe', { method: 'POST' }), 200);
+    if (!probe.tokensFactory.ok) throw new Error(`TokensFactory 探测失败：${probe.tokensFactory.error}`);
+    if (!probe.autoDL.ok) throw new Error(`AutoDL 探测失败：${probe.autoDL.error}`);
+    if (!probe.tokensFactory.detail?.chatModelPresent) throw new Error('中转站没有配置的对话模型');
+    return {
+      chatModel: status.tokensFactory.chatModel, models: probe.tokensFactory.detail.models,
+      imageModelPresent: probe.tokensFactory.detail.imageModelPresent,
+      videoWorkflow: status.autoDL.workflowDefault, probeAnswer: probe.autoDL.detail.probeAnswer,
+    };
+  });
+
   let projectId;
   await check('创建项目', async () => {
     const created = await expect(await api('/api/remix', { method: 'POST', body: { requestId: crypto.randomUUID(), title: '线上冒烟' } }), 201);

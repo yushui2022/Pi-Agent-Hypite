@@ -30,6 +30,11 @@
   ],
   "vars": {
     "S3_ENDPOINT": "https://80972f7fde0a828a5545043d17ca21db.r2.cloudflarestorage.com",
-    "S3_BUCKET": "pi-media-test"
+    "S3_BUCKET": "pi-media-test",
+    "TOKENSFACTORY_BASE_URL": "https://tokensfactory.cc",
+    "TOKENSFACTORY_MODEL": "gemini-3.8-flash",
+    "AUTODL_API_BASE": "https://autodl.art",
+    "AUTODL_WORKFLOW_DEFAULT": "minimax_h3_zm_u24",
+    "AUTODL_WORKFLOW_FAST": "minimax_h3_zm_u08"
   }
 }

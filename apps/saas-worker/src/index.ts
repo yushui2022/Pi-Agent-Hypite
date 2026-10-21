@@ -16,8 +16,10 @@ import {
 import { authorizeUpload, completeUpload } from '../../../packages/cloudflare-storage/upload';
 import type { S3Config } from '../../../packages/cloudflare-storage/upload';
 import { fault } from '../../../packages/remix/revision.mjs';
+import { providerStatus, probeTokensFactory, probeAutoDL } from './providers';
+import type { ProviderEnv } from './providers';
 
-interface Env {
+interface Env extends ProviderEnv {
   DB: D1Database;
   MEDIA: R2Bucket;
   S3_ENDPOINT: string;
@@ -92,6 +94,15 @@ export default {
 
       if (method === 'GET' && url.pathname === '/api/auth/me') {
         return json({ user: publicUser(account), mode: 'workers', generation: false });
+      }
+
+      // Provider configuration and free connectivity probes. Authenticated: the answers name
+      // services and models, which is not public information.
+      if (method === 'GET' && url.pathname === '/api/providers') return json(providerStatus(env));
+      if (method === 'POST' && url.pathname === '/api/providers/probe') {
+        if (!env.TOKENSFACTORY_API_KEY && !env.AUTODL_API_KEY) throw fault('生成服务尚未配置', 409);
+        const [tokensFactory, autoDL] = await Promise.all([probeTokensFactory(env), probeAutoDL(env)]);
+        return json({ tokensFactory, autoDL });
       }
 
       // Direct upload: the browser gets a signed URL, then reports back for verification.

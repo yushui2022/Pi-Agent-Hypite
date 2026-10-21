@@ -76,6 +76,26 @@ npx wrangler d1 execute pi-studio --remote --file=<导出目录>/data.sql -c app
 
 **注意**：本地账号用 scrypt 存密码，Workers 没有 scrypt，**迁移过来的用户必须先重设密码**（登录返回 `password-reset-required`）。全新用户不受影响。
 
+## 生成服务配置（已接入）
+
+| 用途 | 服务 | 配置 |
+|---|---|---|
+| pi-agent 对话模型 + 图片生成 | TokensFactory 中转 | `TOKENSFACTORY_API_KEY`（secret）、`TOKENSFACTORY_BASE_URL`、`TOKENSFACTORY_MODEL` |
+| 视频生成 | AutoDL 工作流 | `AUTODL_API_KEY`（secret）、`AUTODL_API_BASE`、`AUTODL_WORKFLOW_DEFAULT`/`_FAST` |
+
+默认值：对话模型 `gemini-3.8-flash`，图片 `gpt-image-2`，视频 `minimax_h3_zm_u24`（高速版 `minimax_h3_zm_u08`）。
+
+**两个服务的鉴权格式不同，不能互相套用**：TokensFactory 用 `Authorization: Bearer <key>`，AutoDL 用**裸 token**（无 Bearer）。
+
+`GET /api/providers` 返回配置状态（不含密钥）；`POST /api/providers/probe` 做零成本连通性探测（列模型 + 查询一个不存在的任务）。
+
+更新密钥：
+
+```powershell
+npx wrangler secret put TOKENSFACTORY_API_KEY -c apps/saas-worker/wrangler.jsonc
+npx wrangler secret put AUTODL_API_KEY -c apps/saas-worker/wrangler.jsonc
+```
+
 ## 已知限制
 
 - `POST /api/remix/:id/execute` 仍返回 409：真实制作链路未接入
