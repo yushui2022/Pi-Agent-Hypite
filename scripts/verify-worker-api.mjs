@@ -157,6 +157,13 @@ try {
     await json(await call('/api/providers', { cookie: '' }), 401);
   });
 
+  await verify('视频生成：缺参考图与未配置服务都被明确拒绝', async () => {
+    await json(await call('/api/video/submit', { method: 'POST', cookie, body: { projectId, assetIds: [], prompt: 'x' } }), 400);
+    // 本地测试环境未配置 AUTODL_API_KEY
+    await json(await call('/api/video/submit', { method: 'POST', cookie, body: { projectId, assetIds: [assetId], prompt: 'x' } }), 409);
+    await json(await call('/api/video/tasks/00000000-0000-0000-0000-000000000000', { cookie }), 500);
+  });
+
   await verify('另一空间看不到该项目，也不能为它申请上传', async () => {
     const other = await call('/api/auth/register', { method: 'POST', body: { email: 'b@example.test', password: 'correct-horse-9', name: '乙' } });
     const cookieB = cookieOf(other);

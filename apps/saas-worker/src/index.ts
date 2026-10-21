@@ -18,8 +18,11 @@ import type { S3Config } from '../../../packages/cloudflare-storage/upload';
 import { fault } from '../../../packages/remix/revision.mjs';
 import { providerStatus, probeTokensFactory, probeAutoDL } from './providers';
 import type { ProviderEnv } from './providers';
+import { submitVideo, pollVideo } from './video';
+import type { VideoEnv, AutoDLResolution } from './video';
+import { presignS3Url } from '../../../packages/cloudflare-storage/sigv4';
 
-interface Env extends ProviderEnv {
+interface Env extends ProviderEnv, VideoEnv {
   DB: D1Database;
   MEDIA: R2Bucket;
   S3_ENDPOINT: string;
@@ -103,6 +106,44 @@ export default {
         if (!env.TOKENSFACTORY_API_KEY && !env.AUTODL_API_KEY) throw fault('生成服务尚未配置', 409);
         const [tokensFactory, autoDL] = await Promise.all([probeTokensFactory(env), probeAutoDL(env)]);
         return json({ tokensFactory, autoDL });
+      }
+
+      // Video generation. Assets are private in R2, so each reference image is handed to AutoDL
+      // as a short-lived signed URL. Nothing here downloads the result yet: the caller polls.
+      if (method === 'POST' && url.pathname === '/api/video/submit') {
+        const body = await readJson(request);
+        const projectId = String(body.projectId ?? '');
+        const project = await service.read(projectId); // ownership check
+        const assetIds = Array.isArray(body.assetIds) ? body.assetIds.map(String) : [];
+        const audioIds = Array.isArray(body.audioAssetIds) ? body.audioAssetIds.map(String) : [];
+        if (!assetIds.length) throw fault('至少选择一张参考图片', 400);
+        if (!env.AUTODL_API_KEY) throw fault('视频生成服务未配置', 409);
+        const signAsset = async (assetId: string) => {
+          const asset = project.assets.find((item: { id: string }) => item.id === assetId);
+          if (!asset) throw fault('素材不存在或不属于该项目', 404);
+          const signed = await presignS3Url({
+            method: 'GET', endpoint: env.S3_ENDPOINT, bucket: env.S3_BUCKET,
+            key: `workspaces/${account.workspaceId}/projects/${projectId}/assets/${assetId}`,
+            accessKeyId: env.S3_ACCESS_KEY_ID, secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+            expiresSeconds: 3600,
+          });
+          return signed.url;
+        };
+        const images = await Promise.all(assetIds.map(signAsset));
+        const audio = await Promise.all(audioIds.map(signAsset));
+        const task = await submitVideo(env, {
+          variant: body.variant === 'fast' ? 'fast' : 'default',
+          prompt: String(body.prompt ?? ''),
+          images, audio,
+          duration: body.duration === undefined ? 5 : Number(body.duration),
+          resolution: typeof body.resolution === 'string' ? body.resolution as AutoDLResolution : '768p竖',
+          seed: body.seed === undefined ? undefined : Number(body.seed),
+        });
+        return json({ taskId: task.taskId, projectId, submittedAt: new Date().toISOString() }, 202);
+      }
+      const videoTask = /^\/api\/video\/tasks\/([a-f0-9-]{36})$/i.exec(url.pathname);
+      if (method === 'GET' && videoTask) {
+        return json(await pollVideo(env, videoTask[1]));
       }
 
       // Direct upload: the browser gets a signed URL, then reports back for verification.
