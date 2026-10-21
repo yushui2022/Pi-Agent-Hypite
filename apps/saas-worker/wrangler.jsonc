@@ -23,7 +23,7 @@
     "binding": "ASSETS"
   },
   "d1_databases": [
-    { "binding": "DB", "database_name": "pi-studio", "database_id": "REPLACE_WITH_CF_D1_CREATE_OUTPUT" }
+    { "binding": "DB", "database_name": "pi-studio", "database_id": "04fa08b9-7aa4-4e95-a606-8a78df7b040c" }
   ],
   "r2_buckets": [
     { "binding": "MEDIA", "bucket_name": "pi-media-test" }

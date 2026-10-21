@@ -27,6 +27,7 @@
     "cf:d1:list": "node experiments/workers-p0/node_modules/wrangler/bin/wrangler.js d1 list",
     "cf:deploy": "node experiments/workers-p0/node_modules/wrangler/bin/wrangler.js deploy -c apps/saas-worker/wrangler.jsonc",
     "cf:tail": "node experiments/workers-p0/node_modules/wrangler/bin/wrangler.js tail -c apps/saas-worker/wrangler.jsonc",
+    "smoke:deployed": "node scripts/smoke-deployed.mjs",
     "verify:r2": "node scripts/verify-r2-upload.mjs",
     "remix-a:inventory": "node experiments/remix-a/inventory.mjs",
     "start": "node apps/api/server.mjs",

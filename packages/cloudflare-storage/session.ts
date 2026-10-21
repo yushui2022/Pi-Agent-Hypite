@@ -14,7 +14,10 @@
 import { fault } from '../remix/revision.mjs';
 import { assertWorkspaceId } from './scope';
 
-export const PASSWORD_ITERATIONS = 210_000;
+// Cloudflare Workers rejects PBKDF2 iteration counts above 100,000, so this is the platform
+// ceiling rather than a preference. Local workerd builds that predate that check do not enforce
+// it — which is why an earlier 210,000 value passed every local test and failed in production.
+export const PASSWORD_ITERATIONS = 100_000;
 export const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const PREFIX = 'pbkdf2-sha256';
 const encoder = new TextEncoder();

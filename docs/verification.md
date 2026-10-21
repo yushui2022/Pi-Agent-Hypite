@@ -1,3 +1,11 @@
+# 2026-10-20 首次真实部署
+
+- 部署于 <https://pi-studio-saas.xiaoyushui2022.workers.dev>：`wrangler deploy` 成功，D1 `pi-studio`（APAC，6 张表已建）、R2 `pi-media-test`（CORS 规则已写入并回读确认）、两个 R2 secret 已上传。
+- `npm run smoke:deployed`：5/5 通过，针对线上地址 —— 健康检查与首页可用；注册拿到 `pi_saas_session`；创建项目；**申请上传 → 用签名 URL 直传真实 R2 → 确认 → 素材登记**（项目内出现 1 个素材且哈希与上传一致）；素材鉴权读取字节一致，匿名读取 401。
+- **部署后发现的高危缺陷**：Workers 的 PBKDF2 迭代上限为 100,000，原实现用 210,000，注册在生产直接 500。本地 workerd 版本较旧，未实现该限制，因此 18 项会话测试全绿也没能拦住。已降至 100,000 并注明平台原因；本地 `verify:session` 18/18、`verify:worker-api` 10/10 复跑通过后重新部署并跑通冒烟。
+- 同时给请求 catch 增加服务端日志（路径、状态、错误信息），只写日志不回给客户端——否则这类 500 在生产里无法定位。
+- 未验证：浏览器内的直传（CORS 预检、100 MB 大文件、断网重试）。冒烟测试的 PUT 来自 Node，不经过 CORS。
+
 # 2026-10-20 生产 Worker 入口验证
 
 - `npm run verify:worker-api`：10/10 通过。脚本用 esbuild 打包**真实生产入口** `apps/saas-worker/src/index.ts`，在本地 workerd 启动，不是专用测试桩。

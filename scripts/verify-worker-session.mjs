@@ -101,7 +101,7 @@ try {
     const row = await db.prepare('SELECT workspace_id FROM sessions LIMIT 1').first();
     assert.equal(session.user.workspaceId, row.workspace_id, '工作空间必须来自会话记录');
     const user = await db.prepare('SELECT salt,password_hash FROM users LIMIT 1').first();
-    assert.match(user.password_hash, /^pbkdf2-sha256\$210000\$[a-f0-9]{32}\$[a-f0-9]{64}$/);
+    assert.match(user.password_hash, /^pbkdf2-sha256\$100000\$[a-f0-9]{32}\$[a-f0-9]{64}$/);
     assert.match(user.salt, /^[a-f0-9]{32}$/);
   });
 

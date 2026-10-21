@@ -139,6 +139,8 @@ export default {
       throw fault('接口不存在', 404);
     } catch (error) {
       const e = error as { status?: number; message?: string; code?: string };
+      // Server-side only: the client gets a generic message, the log gets the diagnosis.
+      console.error(JSON.stringify({ path: url.pathname, status: e.status ?? 500, code: e.code ?? null, message: e.message ?? String(error) }));
       if (e.code === 'ENOENT') return json({ error: '项目或素材不存在' }, 404);
       return json({ error: e.status ? e.message : '服务暂不可用，请稍后重试' }, e.status ?? 500);
     }

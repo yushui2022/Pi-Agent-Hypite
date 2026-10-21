@@ -1,3 +1,13 @@
+# 最近实施：2026-10-20 首次真实部署完成
+
+Cloudflare 上已部署 `pi-studio-saas`：<https://pi-studio-saas.xiaoyushui2022.workers.dev>。D1 `pi-studio`（APAC，6 张表）、R2 `pi-media-test`（CORS 已配）、两个 secret 已写入。
+
+**线上发现并修复一个本地测不出的缺陷**：Workers 的 PBKDF2 迭代上限是 100,000，原实现用 210,000，注册在线上直接 500（`Pbkdf2 failed: iteration counts above 100000 are not supported`）。本地 workerd 版本较旧、未实施该限制，因此 18 项会话测试全绿却在真实环境失败。已降到平台上限 100,000 并在代码内注明原因。
+
+`npm run smoke:deployed`：对线上跑完整链路 5/5 通过 —— 健康检查与首页、注册、建项目、**申请上传 → 直传真实 R2 → 确认 → 素材登记**、素材鉴权读取且哈希一致、匿名 401。
+
+同批补上：catch 里增加服务端日志（只写日志，不回给客户端），否则这类 500 在生产里等于黑盒。
+
 # 最近实施：2026-10-20 部署配置落在真实账号上
 
 `apps/saas-worker/wrangler.jsonc` 填入真实 `account_id`、R2 桶 `pi-media-test` 与 S3 endpoint；D1 的 `database_id` 仍是占位，需 `cf:d1:create` 后回填。
