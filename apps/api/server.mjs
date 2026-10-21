@@ -18,7 +18,7 @@ export function createApp(config) {
       res.setHeader('Content-Security-Policy', "default-src 'self'; media-src 'self' http://127.0.0.1:*; img-src 'self' http://127.0.0.1:*; style-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'");
       const url = new URL(req.url, `http://${expectedHost}`);
       const route = url.pathname;
-      if (req.method === 'GET' && ['/','/app.js','/agent.js','/api.js','/ui.js','/workspace-state.js','/style.css','/bulk.js','/bulk-format.js','/accounts.js','/accounts-model.js','/remix.js'].includes(route)) {
+      if (req.method === 'GET' && ['/','/app.js','/agent.js','/api.js','/ui.js','/workspace-state.js','/style.css','/bulk.js','/bulk-format.js','/accounts.js','/accounts-model.js','/remix.js','/remix-preparation.js','/remix-batch-editor.js'].includes(route)) {
         const file = route === '/' ? 'index.html' : route.slice(1);
         res.setHeader('Content-Type', file.endsWith('.html') ? 'text/html; charset=utf-8' : file.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/css; charset=utf-8');
         return res.end(await readFile(path.join(root, 'apps/web', file)));

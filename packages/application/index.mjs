@@ -17,7 +17,7 @@ export function createApplication(config) {
     try {
       if(route==='/api/remix'&&method==='GET')return send(200,await remix.list());
       if(route==='/api/remix'&&method==='POST')return send(201,await serialize(()=>remix.create(body)));
-      const remixRoute=route.match(/^\/api\/remix\/(remix_[a-f0-9-]{36})(?:\/(begin|chunk|abort|finish|plan|batches|execute))?$/);
+      const remixRoute=route.match(/^\/api\/remix\/(remix_[a-f0-9-]{36})(?:\/(begin|chunk|abort|finish|plan|batches|check|execute))?$/);
       if(remixRoute){const [,id,action]=remixRoute;if(method==='GET'&&!action)return send(200,await remix.show(id));if(method==='POST'&&action){if(action==='execute')return send(409,{error:'真实替换制作尚未接通。计划已保存，未提交生成请求，也未产生制作费用。'});const fn={plan:'savePlan',batches:'makeBatch'}[action]||action;return send(200,await serialize(()=>remix[fn](id,body)));}}
       if(method==='GET'&&route==='/api/accounts')return send(200,await bulk.listAccounts());
       if(method==='POST'&&route==='/api/accounts/bulk-update')return send(200,await serialize(()=>bulk.bulkUpdateAccounts(body.items,body.patch)));

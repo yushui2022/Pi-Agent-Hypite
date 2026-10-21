@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 
 // Same HTTP contract for local workerd and an explicitly supplied private test Worker.
 // No provisioning, deployment, model call or automatic network retry occurs here.
-export async function benchmarkDriver(remote) {
+export async function benchmarkDriver(remote, localState) {
   let runtime;
   let base = 'https://p0.invalid/';
   let token = localToken;
@@ -14,7 +14,7 @@ export async function benchmarkDriver(remote) {
     base = url.href;
     token = process.env.P0_TOKEN;
     if (!token || token.length < 24) throw new Error('Set P0_TOKEN locally; never place secrets in command arguments');
-  } else runtime = localRuntime('media');
+  } else runtime = localRuntime('media', localState);
   const events = [];
   const request = async (pathname, init = {}) => {
     const response = runtime ? await runtime.dispatchFetch(new URL(pathname, base), {

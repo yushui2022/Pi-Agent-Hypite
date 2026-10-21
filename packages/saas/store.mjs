@@ -3,6 +3,7 @@ import {mkdir} from 'node:fs/promises';
 import {randomUUID,randomBytes,scrypt,timingSafeEqual,createHash} from 'node:crypto';
 import {promisify} from 'node:util';
 import path from 'node:path';
+import {assertProjectId,assertRevision} from '../remix/revision.mjs';
 const derive=promisify(scrypt),digest=s=>createHash('sha256').update(s).digest('hex');
 export const fault=(message,status=400)=>Object.assign(new Error(message),{status});
 const sessionAge=12*60*60*1000;
@@ -27,9 +28,22 @@ export async function openStore(root){
  function identify(token){if(!/^[a-f0-9]{64}$/.test(token||''))throw fault('请先登录',401);const row=db.prepare(`SELECT u.id,u.email,u.name,s.workspace_id,w.name AS workspace_name FROM sessions s JOIN users u ON u.id=s.user_id JOIN memberships m ON m.user_id=s.user_id AND m.workspace_id=s.workspace_id JOIN workspaces w ON w.id=s.workspace_id WHERE s.token_hash=? AND s.expires_at>?`).get(digest(token),Date.now());if(!row)throw fault('登录已失效，请重新登录',401);return row;}
  function logout(token){if(token)db.prepare('DELETE FROM sessions WHERE token_hash=?').run(digest(token));}
  function repository(workspaceId){return {
-  ids:()=>db.prepare('SELECT id FROM projects WHERE workspace_id=?').all(workspaceId).map(r=>r.id),
-  read(id){const p=db.prepare('SELECT document FROM projects WHERE id=? AND workspace_id=?').get(id,workspaceId);if(!p)throw Object.assign(fault('项目不存在',404),{code:'ENOENT'});return JSON.parse(p.document);},
-  save(p){const current=db.prepare('SELECT workspace_id FROM projects WHERE id=?').get(p.id);if(current&&current.workspace_id!==workspaceId)throw fault('项目编号不可使用',409);if(!current&&db.prepare('SELECT count(*) AS n FROM projects WHERE workspace_id=?').get(workspaceId).n>=100)throw fault('当前开发版每空间最多 100 个项目');db.prepare('INSERT INTO projects VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET document=excluded.document WHERE projects.workspace_id=excluded.workspace_id').run(p.id,workspaceId,JSON.stringify(p));}
+  ids:async()=>db.prepare('SELECT id FROM projects WHERE workspace_id=?').all(workspaceId).map(r=>r.id),
+  async read(id){assertProjectId(id);const p=db.prepare('SELECT document FROM projects WHERE id=? AND workspace_id=?').get(id,workspaceId);if(!p)throw Object.assign(fault('项目不存在',404),{code:'ENOENT'});return JSON.parse(p.document);},
+  async save(p,{expectedRevision}){
+    assertProjectId(p.id);assertRevision(expectedRevision);
+    const document=JSON.stringify(p);
+    if(expectedRevision===null){
+      const result=db.prepare('INSERT INTO projects(id,workspace_id,document) SELECT ?,?,? WHERE (SELECT count(*) FROM projects WHERE workspace_id=?)<100 ON CONFLICT(id) DO NOTHING').run(p.id,workspaceId,document,workspaceId);
+      if(!result.changes){if(db.prepare('SELECT id FROM projects WHERE id=?').get(p.id))throw fault('项目编号不可使用',409);throw fault('当前开发版每空间最多 100 个项目');}
+      return;
+    }
+    const current=db.prepare('SELECT document FROM projects WHERE id=? AND workspace_id=?').get(p.id,workspaceId);
+    if(!current)throw Object.assign(fault('项目不存在',404),{code:'ENOENT'});
+    if(digest(JSON.stringify(JSON.parse(current.document)))!==expectedRevision)throw fault('项目已更新，请重新打开后重试',409);
+    const result=db.prepare('UPDATE projects SET document=? WHERE id=? AND workspace_id=? AND document=?').run(document,p.id,workspaceId,current.document);
+    if(!result.changes)throw fault('项目已更新，请重新打开后重试',409);
+  }
  };}
  return {register,login,identify,logout,repository,close:()=>db.close()};
 }

@@ -1,0 +1,71 @@
+{
+  "schema": "pi-studio.worker-storage-verification@1",
+  "startedAt": "2026-10-19T09:20:31.068Z",
+  "environment": "local workerd only",
+  "output": "G:\\DevCache\\Temp\\pi-agent-hypite\\workers-storage\\run-hqF8RX",
+  "checks": [
+    {
+      "name": "TypeScript 和纯 Worker 构建通过，产物不含 Node 存储、Pi CLI 或 Hypit",
+      "passed": true
+    },
+    {
+      "name": "实验入口默认关闭；未配置测试标记返回 503",
+      "passed": true
+    },
+    {
+      "name": "未认证、伪造身份和客户端 workspaceId 不改变服务器归属",
+      "passed": true
+    },
+    {
+      "name": "并发重复创建只有一份记录，冲突请求与跨空间占用均拒绝",
+      "passed": true
+    },
+    {
+      "name": "R2 校验哈希、按范围流式读取、HEAD 和跨空间素材隔离",
+      "passed": true
+    },
+    {
+      "name": "并发登记不同素材不丢记录，同哈希重试复用原素材 ID",
+      "passed": true
+    },
+    {
+      "name": "并发编辑同一 revision 仅一个成功，准备检查只读，execute 仍阻断",
+      "passed": true
+    },
+    {
+      "name": "批次并发重试幂等；复制保留旧方案且生成独立变体",
+      "passed": true
+    },
+    {
+      "name": "R2 缺失、同大小损坏、缺校验和均不可用，文件恢复不改方案 revision",
+      "passed": true
+    },
+    {
+      "name": "workerd 重启后 D1 项目、批次和 R2 原字节仍可读取",
+      "passed": true
+    },
+    {
+      "name": "超过 D1 文档预算时明确拒绝，已保存的方案和批次不发生部分写入",
+      "passed": true
+    },
+    {
+      "name": "并发创建不能突破每空间 100 项上限",
+      "passed": true
+    }
+  ],
+  "sources": {
+    "packages/remix/preparation.mjs": "c74f53d064cfbc3733bafb87a7b53eda7e65c4692ceb10a183ea303f6f2db2c8",
+    "packages/remix/revision.mjs": "cc48e31d0c50cd6b83bf3ec451d7ce976b5d54ef0f66aa057b6625ee497f6552",
+    "packages/remix/service.mjs": "5964b3c3775a9af491f7d47935895c295384df7d64a2b6816e59721e61bdb5c8",
+    "packages/cloudflare-storage/scope.ts": "fbc262c3346a38650ff0e5ae9412b62c400b124a5da113953a8787a0346ff634",
+    "packages/cloudflare-storage/d1.ts": "50ba3978e0ed62ae161cb36b0752f97e185ede049ccd5c1d7f00ac1228a96336",
+    "packages/cloudflare-storage/r2.ts": "e2eac464736046675d6c5f316e3b966f4b534392990261c16c35e2dc072178a6",
+    "experiments/workers-storage/worker.ts": "a74101bcebb32025b7154be31f9a09378555283f32564a25f0c05d0251b1a26e",
+    "packages/cloudflare-storage/schema.sql": "605432bf491b72f9dfbd38ffe18b9379db4ee70cf71f6690fad97892a6b8ca1a",
+    "scripts/verify-worker-storage.mjs": "fd03c83afdacb37dcfcfb12813b24fc066c6eca6e03e140934231d9c8457c2f7"
+  },
+  "cloudVerified": false,
+  "executionEnabled": false,
+  "passed": true,
+  "finishedAt": "2026-10-19T09:20:38.343Z"
+}

@@ -26,7 +26,7 @@ export async function createSaasServer({dataRoot=path.join(root,'.data/saas'),pu
    // Public UI illustrations are explicitly allowlisted; user media still uses authenticated /api/media.
    const uiImage=route.match(/^\/assets\/((?:(?:scenario-(?:product|travel|brand)|remix-storyboard)-(?:480|960)|creation-atmosphere-(?:dark|light))\.webp)$/);
    if(serveWeb&&req.method==='GET'&&uiImage){res.setHeader('Content-Type','image/webp');return res.end(await readFile(path.join(root,'apps/saas-web/assets',uiImage[1])));}
-   const files={'/home.js':'apps/saas-web/home.js','/icons.js':'apps/saas-web/icons.js','/favicon.svg':'apps/saas-web/favicon.svg','/components.js':'apps/saas-web/components.js','/workspace-model.js':'apps/saas-web/workspace-model.js','/workspace.js':'apps/saas-web/workspace.js','/tokens.css':'apps/saas-web/tokens.css','/components.css':'apps/saas-web/components.css','/reference-upload.js':'apps/saas-web/reference-upload.js','/':'apps/saas-web/index.html','/saas.js':'apps/saas-web/app.js','/saas.css':'apps/saas-web/style.css','/remix.js':'apps/web/remix.js','/api.js':'apps/saas-web/api.js','/ui.js':'apps/web/ui.js','/style.css':'apps/web/style.css'};
+   const files={'/home.js':'apps/saas-web/home.js','/icons.js':'apps/saas-web/icons.js','/favicon.svg':'apps/saas-web/favicon.svg','/components.js':'apps/saas-web/components.js','/workspace-model.js':'apps/saas-web/workspace-model.js','/workspace.js':'apps/saas-web/workspace.js','/tokens.css':'apps/saas-web/tokens.css','/components.css':'apps/saas-web/components.css','/reference-upload.js':'apps/saas-web/reference-upload.js','/':'apps/saas-web/index.html','/saas.js':'apps/saas-web/app.js','/saas.css':'apps/saas-web/style.css','/remix.js':'apps/web/remix.js','/remix-preparation.js':'apps/web/remix-preparation.js','/remix-batch-editor.js':'apps/web/remix-batch-editor.js','/api.js':'apps/saas-web/api.js','/ui.js':'apps/web/ui.js','/style.css':'apps/web/style.css'};
    if(serveWeb&&req.method==='GET'&&files[route]){res.setHeader('Content-Type',route.endsWith('.svg')?'image/svg+xml':route.endsWith('.js')?'text/javascript; charset=utf-8':route.endsWith('.css')?'text/css; charset=utf-8':'text/html; charset=utf-8');return res.end(await readFile(path.join(root,files[route])));}
    let body={};if(['POST','PUT'].includes(req.method)){if(req.headers['content-type']!=='application/json')throw fault('需要 JSON 请求',415);req.setEncoding('utf8');let raw='';for await(const chunk of req){raw+=chunk;if(Buffer.byteLength(raw)>65536)throw fault('请求过大',413);}try{body=JSON.parse(raw);}catch{throw fault('JSON 无效');}if(!body||typeof body!=='object'||Array.isArray(body))throw fault('请求无效');}
    const token=(req.headers.cookie||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('pi_saas_session='))?.slice(16)||'';
@@ -44,9 +44,9 @@ export async function createSaasServer({dataRoot=path.join(root,'.data/saas'),pu
    }
    if(route==='/api/remix'&&req.method==='GET')return json(200,await manager.list());
    if(route==='/api/remix'&&req.method==='POST')return json(201,await run(()=>manager.create(body)));
-   const match=route.match(/^\/api\/remix\/(remix_[a-f0-9-]{36})(?:\/(begin|chunk|abort|finish|plan|batches|execute))?$/);
+   const match=route.match(/^\/api\/remix\/(remix_[a-f0-9-]{36})(?:\/(begin|chunk|abort|finish|plan|batches|check|execute))?$/);
    if(match){const [,id,action]=match;if(req.method==='GET'&&!action)return json(200,await manager.show(id));if(req.method==='POST'&&action){// Ownership is checked before every action, including upload-session actions.
-     store.repository(user.workspace_id).read(id);
+     await store.repository(user.workspace_id).read(id);
      if(action==='execute')throw fault('当前只开放创作准备，真实制作服务尚未接入',409);
      const name={plan:'savePlan',batches:'makeBatch'}[action]||action;return json(200,await run(()=>manager[name](id,body)));}}
    throw fault('接口不存在',404);

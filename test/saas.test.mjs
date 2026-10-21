@@ -18,6 +18,12 @@ test('SaaS：双用户隔离、素材鉴权、退出撤销和数据库重启恢�
  const requestId=randomUUID();const created=await request('/api/remix',{cookie:a,body:{title:'私有中文项目',requestId}});assert.equal(created.status,201);const p=await created.json(),base='/api/remix/'+p.id;
  assert.equal((await request(base,{cookie:b})).status,404);
  assert.equal((await request(base+'/begin',{cookie:b,body:{name:'x.png',size:16}})).status,404);
+ assert.equal((await request(base+'/check',{cookie:b,body:{revision:p.revision}})).status,404);
+ assert.equal((await request(base+'/check',{body:{revision:p.revision}})).status,401);
+ assert.equal((await request(base+'/batches',{cookie:b,body:{revision:p.revision,sourceBatchId:randomUUID()}})).status,404);
+ const report=await request(base+'/check',{cookie:a,body:{revision:p.revision}});assert.equal(report.status,200);
+ assert.equal((await report.json()).canExecute,false);
+ assert.equal((await (await request(base,{cookie:a})).json()).revision,p.revision);
  assert.equal((await request('/api/remix',{cookie:b,body:{title:'collision',requestId}})).status,409);
  assert.deepEqual(await (await request('/api/remix',{cookie:b})).json(),[]);
  const bytes=Buffer.from('89504e470d0a1a0a0000000000000000','hex');
