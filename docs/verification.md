@@ -1,3 +1,56 @@
+# 2026-10-20 Cloudflare 上线准备验证
+
+- `npm run verify:migration`：9/9 通过。本地构造与 SaaS 服务器相同的 SQLite DDL 和 `media/<空间>/.remix/<项目>/<素材>` 布局，迁移后灌入本地 workerd 的 D1 与 R2，逐项比对。
+- 覆盖的 9 项：夹具结构与服务器一致；迁移核对每个素材大小与 SHA-256（4/4）；过期会话不迁移、有效会话保留；R2 清单键带空间前缀且哈希等于真实字节；素材缺失时迁移拒绝通过并定位到项目；超过 D1 单项目 1.5 MiB 的工程被报告且不写入 `data.sql`；完整 schema 在 D1 建成 5 张表；迁移后行数、项目文档逐字一致与版本哈希一致；R2 写入后取回字节与清单哈希一致。
+- 真实本地数据演练：`node scripts/migrate-to-d1.mjs` 对现有 `.data/saas`（2 用户 / 2 空间 / 1 项目）迁移 `ok: true`，2/2 素材按大小与 SHA-256 核对通过，产出 2 个 R2 键。
+- 该演练暴露并修复了一个真实缺陷：素材实际布局是 `<dataRoot>/media/<workspaceId>/.remix/<projectId>/<assetId>`（`apps/saas-api/server.mjs` 为每个空间单独建 remix 根），初版按 `<dataRoot>/.remix` 查找会误报缺失。夹具与迁移路径现已按真实布局对齐。
+
+- `npm run workers:storage:test`：12/12 仍通过（schema 扩展后无回归）；`npm test`：44/44 通过。
+- 未连接任何 Cloudflare 账号，未部署，无费用。产物与报告：`G:/DevCache/Temp/pi-agent-hypite/d1-migration/run-*`（`report.json`、`export/data.sql`、`export/r2-manifest.json`）。
+- 仍未验证：Worker 侧正式会话/登录接口、R2 直传与完成确认、跨服务失败对账、云端真实应用与配额。
+
+# 2026-10-20 A 路线核实验证
+
+- `hypit check` 与 `hypit plan` 在本机对官方换商品、换人工程真实通过（`ok: true`），未提交任何生成。
+- `node experiments/remix-a/inventory.mjs vendor/hypit/examples/podcast swap-item.svrun`：32 个计划步骤，13 次付费模型调用（9 次 `@hypit/gpt-image@1#gpt-image-2`、4 次 `@hypit/seedance@1#seedance-2-mini`），其余为本地媒体操作（inspect/normalize/mux）、`whisperx-alignment` 3 次与 `render-hyperframes` 1 次。
+- 同一工具对 `vendor/hypit/examples/interview` 的 `swap-host.svrun`：29 步，10 次付费调用（7 图 + 3 视频）。
+- 源码核对：`examples/podcast/swap-item.svml` 使用 `seedance:ReferenceVideo` 且每个图片参考显式声明 `person-reference="true"`；`packages/seedance/README.md` 要求该字段必填，为 A 路线的原生支持证据。`packages/volcengine-matting/README.md` 描述为"去除动态人像背景，把剪影放到另一张图上"，与 B 方向相反。
+- `inventory.mjs` 的能力归类是启发式按包名匹配，未识别项以 `other` 原样保留，未做猜测性归并。
+- 未验证：真实爆款视频分析、真实生成、生成结果与原作在节奏/构图/文字上的一致性、音色与口型。未执行 `build`，无费用，无用户数据改动。
+
+# 2026-10-20 工程映射层验证
+
+- `npm test`：44/44 通过（新增 8 项映射测试）；`npm --prefix experiments/workers-p0 run check`：TypeScript 检查通过。
+- 有效方案：完整替换表（3×5 秒、字幕对齐镜头、配音/音乐/字体显式声明）产出 `pi-studio.p0-project@1`，并被真实 `compileProject` 编译为 normalize-1/2/3 + final 四步；上传清单为 6 个固定名称。相同输入两次得到相同 `key`，改动一个字幕即改变 `key`。
+- 拒绝路径（plan 级，不产出工程）：画面空档、字幕区间未与镜头边界对齐、未声明配音角色、音频项素材未声明角色、已声明角色在替换表中缺失、时间未对齐 25 fps、素材缺失、未声明字体。
+- 能力缺口（capability 级，保留工程但 `engine` 为空）：2 镜头不等长 → `engine.shot-count` + `engine.shot-duration`；图片作主画面 → `engine.source-format`；音频被裁剪到片段区间 → `engine.audio-trim`；某镜头无字幕 → `engine.caption-required`。
+- 映射常量与 `packages/remix/preparation.mjs` 的 `preparationProfile` 逐字段比对，防止两处规则漂移。
+- 本轮为纯函数验证，**未执行任何媒体编码**，未调用模型，未改动用户数据；`execute` 仍返回 409。云端 P0 关口结论不变。
+
+# 2026-10-20 本地制作执行桥接
+
+- `npm test`：36/36；`npm --prefix experiments/workers-p0 run check` 通过。
+- `npm run workers:execution:test`：真实本地 workerd 重启续跑、重复提交复用、修改单镜头局部重做通过；最终 MP4 15 秒/375 帧/720×1280/H.264/AAC，通过全片解码、字幕像素、混音及时间戳检查。
+- 证据 `G:/DevCache/Temp/pi-agent-hypite/workers-p0/execution-1792479901724`，包含 plan、revised-plan、journal、各步骤 report、artifact-manifest、verification 与 final.mp4。失败首轮保留并说明于 [执行报告](local-execution-core.md)。
+- 使用技术合成素材与固定音频，不调用外部模型。未部署云端、未接入正式网页、未验证生产多租户执行/付费重试；没有把测试通过标记为 AI 复刻成功。
+
+# 2026-10-19 Worker 存储基础验证
+
+- `npm test`：33/33 通过；`npm run saas:build` 通过；`git diff --check` 通过。新增本地 JSON/SQLite 并发覆盖保护、旧 revision 兼容、跨空间写入拒绝及上传元数据保存失败后重试验证。
+- `npm run workers:storage:test`：12/12 本地 workerd 检查通过，包含 TypeScript 检查与纯浏览器平台打包；产物不含 Node 存储、vendor/Pi CLI 或 Hypit。
+- 通过真实本地 D1/R2 Binding 验证并发创建/编辑/素材登记、请求幂等、两空间隔离、只读检查、旧批次复制、文件校验与范围流、重启恢复、文档 413 及原子数量配额。传输样本为合成微型夹具，不代表视频解码或播放通过。
+- 报告：G:/DevCache/Temp/pi-agent-hypite/workers-storage/run-hqF8RX/report.json；代码内 [结果摘要](../experiments/workers-storage/evidence/local-2026-10-19.json)。所有构建与实验状态在 G 盘独立目录，未修改正常账号/项目数据。
+- 云端和真实模型未验收。实验固定身份不是真实认证，R2 直传/上传完成记录/配额/迁移脚本未实现，仍不开放制作。详细边界见 [实施说明](worker-storage-foundation.md)。
+
+# 2026-10-19 本地创作准备完善验证
+
+- 最终 `npm test` 30/30、`npm run saas:build` 通过。新增规则、快照复制、幂等/版本冲突、历史记录保留、越权检查、原 ID 素材修复的验证。
+- 4321 隔离 SaaS：真实网页定位超 15 秒错误、修改保存、草稿阻止、复查、下载 JSON；复制旧批次并保存三份不同文案。API 再读取确认原批次逐字段不变、来源快照正确、产物为空。
+- 对隔离合成图片截断后，经文件选择/分片上传实际恢复；素材 ID/数量和所有快照引用不变。自动测试另覆盖缺失和同大小损坏。
+- 1440/390/320 px 双主题批次检查无横向溢出，320 px 编辑保存通过，已看截图。检查期间未观察到页面脚本异常；匿名 401 与显式 503 网络夹具为预期记录，503 后重试恢复。
+- 证据：G:/DevCache/Temp/pi-agent-hypite/preparation-qa；含下载报告、browser-save-verification.json、截图和独立测试库。详细边界见 [本地准备完善](local-preparation-upgrade.md)。没有写入正常用户项目或调用付费服务。
+- 检查不包含真实媒体解码与生成；哈希登记值不当作已验证。旧媒体 P0 基准未改动，本轮不重复运行耗时编码实验；云端关口未通过。
+
 # 2026-10-19 升级版提交前验证
 
 主项目 `npm test` 25/25 和 `npm run saas:build` 重新运行通过；本次提交同时包含此前前端布局/文案升级和 Workers P0 代码。P0 的 4 项专项测试、20 轮连续制作、输入矩阵及打包结果见下方记录，本次未重复耗时媒体基准。提交范围已检查，源码/配置/依赖锁/报告纳入版本管理，密钥、用户素材、数据库、依赖目录、构建缓存和大媒体产物保持排除。P0 目录固定 LF 换行，避免 Windows 检出后破坏 WSL 构建脚本。

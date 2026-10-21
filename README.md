@@ -4,6 +4,14 @@
 
 面向参考视频复刻与批量改编的 Web SaaS 项目。当前支持账号与私有空间、参考视频导入预览、替换素材与方案、多批次计划，以及深浅主题创作界面。实际视频生成、Pi/Hypit 的 SaaS 执行、支付和公网部署尚未完成。
 
+本地准备流程已加入 **方案/批次规格检查、基于旧批次创建新版本、素材重新导入修复**。新批次支持 1–20 个变体，旧批次快照保持不变；检查不会提交制作。使用路径和验证范围见 [本地准备完善](docs/local-preparation-upgrade.md)。
+
+迁移基础已加入共享复刻业务、带版本冲突保护的 D1 适配与 R2 私有素材读取；通过 `npm run workers:storage:test` 可在本地 workerd 验证，不需要云账号。正常网页仍使用原 SQLite/本地素材，范围见 [Worker 存储基础](docs/worker-storage-foundation.md)。
+
+D1 账号 schema 与迁移演练已就绪：`npm run migrate:d1` 生成本地数据到 D1/R2 的可审阅产物（`data.sql`、`r2-manifest.json`、`report.json`），`npm run verify:migration` 在本地 workerd 比对 9 项。未连接云账号，未部署。
+
+网页替换方案到可执行工程的映射层已落地（`experiments/workers-p0/src/remix-bridge.ts`）：音频角色与字体必须显式声明，画面空档/重叠/非帧边界直接拒绝，当前引擎表达不了的方案返回能力缺口清单。验收口径见 [单用户最小闭环](docs/single-user-closed-loop.md)。制作入口仍未开放。
+
 Web 入口：Node.js 24+，运行 `npm ci` 后执行 `npm run saas:dev`，访问 http://127.0.0.1:4320 。前端在 `apps/saas-web`，API 在 `apps/saas-api`；静态构建为 `npm run saas:build`。部署配置见 [部署说明](deploy/saas/README.md)，当前能力与验证见 [进度](docs/progress.md) 和 [验收记录](docs/verification.md)。
 
 保留本地工作台与桌面开发入口。两个上游完整源码已纳入 vendor/pi 和 vendor/hypit，可直接修改；本地工作台运行源码构建和 TypeScript 引擎，不依赖两个 npm 发布包。下方源码准备与引擎检查说明适用于这些本地入口。
