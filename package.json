@@ -16,6 +16,7 @@
     "workers:p0:bench": "npm --prefix experiments/workers-p0 run bench --",
     "workers:storage:test": "node scripts/verify-worker-storage.mjs",
     "workers:execution:test": "node experiments/workers-p0/scripts/execution-check.mjs",
+    "verify:session": "node scripts/verify-worker-session.mjs",
     "migrate:d1": "node scripts/migrate-to-d1.mjs",
     "verify:migration": "node scripts/verify-migration.mjs",
     "remix-a:inventory": "node experiments/remix-a/inventory.mjs",

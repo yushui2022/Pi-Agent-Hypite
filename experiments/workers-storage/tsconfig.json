@@ -11,5 +11,5 @@
     "allowJs": true,
     "checkJs": false
   },
-  "include": ["worker.ts", "../../packages/cloudflare-storage/**/*.ts"]
+  "include": ["worker.ts", "session-worker.ts", "../../packages/cloudflare-storage/**/*.ts"]
 }
