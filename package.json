@@ -19,6 +19,7 @@
     "verify:session": "node scripts/verify-worker-session.mjs",
     "migrate:d1": "node scripts/migrate-to-d1.mjs",
     "verify:migration": "node scripts/verify-migration.mjs",
+    "verify:r2": "node scripts/verify-r2-upload.mjs",
     "remix-a:inventory": "node experiments/remix-a/inventory.mjs",
     "start": "node apps/api/server.mjs",
     "doctor": "node scripts/doctor.mjs",

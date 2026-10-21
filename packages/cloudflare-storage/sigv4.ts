@@ -35,7 +35,7 @@ export function amzDate(now: Date): { amzDate: string; dateStamp: string } {
 }
 
 export interface PresignInput {
-  method: 'PUT' | 'GET';
+  method: 'PUT' | 'GET' | 'DELETE';
   /** S3-compatible origin only, e.g. https://<account>.r2.cloudflarestorage.com */
   endpoint: string;
   bucket: string;

@@ -1,3 +1,14 @@
+# 2026-10-20 真实 R2 验收（首个离开本机的验证）
+
+- `npm run verify:r2`：5/5 通过，针对真实 Cloudflare R2 桶，非本地模拟。
+- 预签名 PUT 返回 200，对象写入成功；预签名 GET 取回字节数与 SHA-256 均与上传一致。
+- 用错误校验和签名后上传同内容，R2 返回 4xx 拒绝 —— 强制校验和（`x-amz-checksum-sha256` 参与签名）在真实服务端成立。
+- 预签名 DELETE 返回 204，随后 GET 为 404，桶内无残留探针对象。
+- 凭证来源为本机 `.env`（git 忽略），脚本只打印掩码；报告中不含密钥。报告：`G:/DevCache/Temp/pi-agent-hypite/r2-acceptance/report-*.json`。
+- 这解除了此前"签名 URL 是否被 R2 接受"的未验证项。仍未验证/未完成：Worker 入口部署、D1 上云、真实素材上传 100 MB 级并发、费用计量。
+- 提醒：本轮使用的令牌曾在对话截图中出现，应按凭证泄露处理并轮换。
+
+
 # 2026-10-20 R2 直传授权与完成确认验证
 
 - `npm run verify:session`：18/18 通过（新增 7 项上传检查）；`workers:storage:test` 12/12、`npm test` 51/51 未回归；`tsc -p experiments/workers-storage/tsconfig.json` 通过。
