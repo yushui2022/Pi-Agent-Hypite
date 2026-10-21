@@ -1,32 +1,35 @@
 {
   // Production Workers configuration for the SaaS API + static frontend.
   //
-  // Before the first deploy:
-  //   1. npm run saas:build            (fills ../../dist/saas-web, which `assets` serves)
-  //   2. wrangler d1 create pi-studio  (paste the returned database_id below)
-  //   3. wrangler d1 execute pi-studio --remote --file=<packages/cloudflare-storage/schema.sql>
-  //   4. wrangler r2 bucket create pi-media   (or reuse an existing bucket)
-  //   5. wrangler secret put S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY
-  //      The R2 token must be scoped to this bucket only, with Object Read & Write.
+  // Already filled in for the current account: account_id, the R2 bucket and its S3 endpoint.
+  // Still required before the first deploy:
+  //   npm run cf:d1:create     -> paste the returned database_id into database_id below
+  //   npm run cf:d1:schema     -> apply packages/cloudflare-storage/schema.sql to the D1 database
+  //   R2 bucket CORS policy    -> see README.md, otherwise browser uploads fail
+  //   npm run cf:secret:access + cf:secret:secret  (or `wrangler secret put` by hand)
+  //   npm run saas:build       -> fills ../../dist/saas-web, which `assets` serves
+  //   npm run cf:deploy
   //
   // S3_ENDPOINT and S3_BUCKET are configuration, not secrets, so they live in vars.
+  // The R2 credential pair must be an R2 token scoped to this bucket with Object Read & Write.
   "$schema": "../../experiments/workers-p0/node_modules/wrangler/config-schema.json",
   "name": "pi-studio-saas",
   "main": "src/index.ts",
   "compatibility_date": "2026-07-30",
+  "account_id": "80972f7fde0a828a5545043d17ca21db",
   "observability": { "enabled": true },
   "assets": {
     "directory": "../../dist/saas-web",
     "binding": "ASSETS"
   },
   "d1_databases": [
-    { "binding": "DB", "database_name": "pi-studio", "database_id": "REPLACE_WITH_WRANGLER_D1_CREATE_OUTPUT" }
+    { "binding": "DB", "database_name": "pi-studio", "database_id": "REPLACE_WITH_CF_D1_CREATE_OUTPUT" }
   ],
   "r2_buckets": [
-    { "binding": "MEDIA", "bucket_name": "pi-media" }
+    { "binding": "MEDIA", "bucket_name": "pi-media-test" }
   ],
   "vars": {
-    "S3_ENDPOINT": "https://REPLACE_WITH_ACCOUNT_ID.r2.cloudflarestorage.com",
-    "S3_BUCKET": "pi-media"
+    "S3_ENDPOINT": "https://80972f7fde0a828a5545043d17ca21db.r2.cloudflarestorage.com",
+    "S3_BUCKET": "pi-media-test"
   }
 }

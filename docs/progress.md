@@ -1,3 +1,12 @@
+# 最近实施：2026-10-20 部署配置落在真实账号上
+
+`apps/saas-worker/wrangler.jsonc` 填入真实 `account_id`、R2 桶 `pi-media-test` 与 S3 endpoint；D1 的 `database_id` 仍是占位，需 `cf:d1:create` 后回填。
+
+新增 `cf:*` 命令，全部走仓库内已固定的 wrangler 4.151.1，不依赖全局安装或 npx 下载：`cf:login`、`cf:whoami`、`cf:d1:create`、`cf:d1:schema`、`cf:d1:list`、`cf:deploy`、`cf:tail`。本机实测 `cf:whoami` 正确返回"未登录，请先 wrangler login"。
+
+部署清单已按真实账号重写为四步：开通 Workers 付费计划、建 D1 并回填 ID 与建表、配 R2 CORS（`x-amz-checksum-sha256` 必须在白名单）、写入两个 R2 secret 并部署。
+
+
 # 最近实施：2026-10-20 生产 Worker 入口 + 部署配置 + 前端直传
 
 上云前三件事完成。
