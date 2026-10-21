@@ -8,6 +8,8 @@
 
 迁移基础已加入共享复刻业务、带版本冲突保护的 D1 适配与 R2 私有素材读取；通过 `npm run workers:storage:test` 可在本地 workerd 验证，不需要云账号。正常网页仍使用原 SQLite/本地素材，范围见 [Worker 存储基础](docs/worker-storage-foundation.md)。
 
+Worker 账号与会话已落地：注册、登录、登出与会话识别在本地 workerd 通过 11 项检查（`npm run verify:session`）。注意 **Workers 没有 scrypt**，本地旧账号迁移后需重设密码，新账号使用 PBKDF2-HMAC-SHA256。
+
 D1 账号 schema 与迁移演练已就绪：`npm run migrate:d1` 生成本地数据到 D1/R2 的可审阅产物（`data.sql`、`r2-manifest.json`、`report.json`），`npm run verify:migration` 在本地 workerd 比对 9 项。未连接云账号，未部署。
 
 网页替换方案到可执行工程的映射层已落地（`experiments/workers-p0/src/remix-bridge.ts`）：音频角色与字体必须显式声明，画面空档/重叠/非帧边界直接拒绝，当前引擎表达不了的方案返回能力缺口清单。验收口径见 [单用户最小闭环](docs/single-user-closed-loop.md)。制作入口仍未开放。

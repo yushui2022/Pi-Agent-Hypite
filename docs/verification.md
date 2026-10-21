@@ -1,3 +1,15 @@
+# 2026-10-20 Worker 账号与会话验证
+
+- `npm run verify:session`：11/11 通过（本地 workerd）。TypeScript 与纯 Worker 构建通过；未配置测试标记时入口返回 503。
+- 注册在同一批次建立用户、空间、成员与会话，各表计数为 1；Cookie 带 `HttpOnly`、`SameSite=Strict`、`Path=/`、正 `Max-Age`，并在 https 下带 `Secure`、http 下不带。
+- 身份只来自服务端会话：`/api/session` 返回的空间与 `sessions` 表记录一致；密码以 `pbkdf2-sha256$210000$<salt>$<hash>` 存储。
+- 错误密码与不存在的账号返回完全相同的响应，不泄露账号是否存在；重复邮箱注册 409 且不新增用户。
+- 登出后该会话记录被删除、其余设备会话不受影响；伪造令牌与过期令牌均 401。
+- **本地 scrypt 哈希在 Worker 内被明确拒绝**（`code: password-reset-required`），不当作密码错误。这是 Workers 无 scrypt 的必然结果。
+- 两空间互不可见：乙在自己空间写入项目后，甲的列表为空且 workspaceId 不同。
+- 回归：`workers:storage:test` 12/12、`npm test` 44/44。
+- 未连接 Cloudflare 账号，未部署，无费用。报告：`G:/DevCache/Temp/pi-agent-hypite/worker-session/run-*/report.json`。
+
 # 2026-10-20 Cloudflare 上线准备验证
 
 - `npm run verify:migration`：9/9 通过。本地构造与 SaaS 服务器相同的 SQLite DDL 和 `media/<空间>/.remix/<项目>/<素材>` 布局，迁移后灌入本地 workerd 的 D1 与 R2，逐项比对。

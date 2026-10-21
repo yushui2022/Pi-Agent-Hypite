@@ -1,3 +1,13 @@
+# 最近实施：2026-10-20 Worker 账号与会话
+
+补齐云端登录，替换实验里两个写死的测试身份。`packages/cloudflare-storage/session.ts` 提供注册、登录、登出、会话识别与 Cookie，身份只从服务端会话构造，从不接受请求体里的 workspaceId。
+
+**必须记下的硬约束**：Workers 没有 scrypt（Web Crypto 与 workerd 的 node:crypto 都没有），因此 Worker **无法校验本地服务已存的 scrypt 密码哈希**。云端改用 PBKDF2-HMAC-SHA256（210,000 次），哈希串自带算法前缀；遇到旧 scrypt 格式时返回明确的 `password-reset-required`，而不是伪装成"密码错误"。
+
+**上线影响**：迁移后本地老用户不能直接登录云端，必须先重设密码。哈希不能反推明文，也没有可转换路径，这是算法差异的必然结果，不是实现缺陷。在新用户为主的场景可以接受，但必须在对外文案与迁移说明里写清。
+
+`npm run verify:session`：本地 workerd 11 项通过。`workers:storage:test` 12/12、`npm test` 44/44 未回归。未连接云账号，未部署。
+
 # 最近实施：2026-10-20 Cloudflare 上线准备（账号 schema + 迁移演练）
 
 D1 schema 原先只有项目表，没有账号体系；上线前必须补。`packages/cloudflare-storage/schema.sql` 现补齐 `users` / `workspaces` / `memberships` / `sessions`，字段与 `packages/saas/store.mjs` 的本地 SQLite 逐字段一致，使迁移是 1:1 拷贝而不是重写；`remix_projects` 保留原名与 `revision` 列以兼容现有 D1 适配器。

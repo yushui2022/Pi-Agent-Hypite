@@ -50,7 +50,7 @@ npm run saas:build
 
 ## 后续执行顺序
 
-1. 在本地验证正式 Worker 会话/权限接口，保留原密码格式并约束认证内存和并发。
+1. ~~在本地验证正式 Worker 会话/权限接口~~ **已完成（2026-10-20，`npm run verify:session` 11/11）**。但**原密码格式无法保留**：Workers 没有 scrypt，本地 scrypt 哈希在云端不可校验，改用户重设密码（返回 `password-reset-required`）；新账号用 PBKDF2-HMAC-SHA256。限流与并发约束仍未实现。
 2. 实现可恢复的上传登记、R2 直传授权/完成确认与租户配额，补齐 D1/R2 跨服务失败对账。
 3. ~~提供显式迁移演练~~ **已完成（2026-10-20）**：`packages/cloudflare-storage/schema.sql` 补齐账号、空间、成员、会话表；`scripts/migrate-to-d1.mjs` 保留 ID、核对素材大小与 SHA-256、输出 `data.sql` / `r2-manifest.json` / `report.json`，缺失、损坏与超限工程一律报告并拒绝通过；`npm run verify:migration` 在本地 workerd 的 D1/R2 完成 9 项比对。
 4. 云账号与预算准备后，完成 P0 云端媒体验收，再接通项目工程、Pi 编排与制作队列。
