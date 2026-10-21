@@ -5,7 +5,7 @@
 // that would be deployed. Only the S3 credential values are fake, and the browser's PUT to R2
 // is simulated by writing the object through the binding.
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
@@ -118,7 +118,7 @@ try {
     assert.equal(before.assets.length, 0, '未确认前项目里不应有素材');
     const upload = await db.prepare('SELECT object_key FROM uploads WHERE id=?').bind(uploadId).first();
     // The browser's PUT is simulated by writing the object with its real checksum.
-    await bucket.put(upload.object_key, bytes, { sha256: createHash('sha256').update(bytes).digest() });
+    await bucket.put(upload.object_key, bytes, { sha256: createHash('sha256').update(bytes).digest(), httpMetadata: { contentType: 'video/mp4' } });
     const done = await json(await call(`/api/uploads/${uploadId}/complete`, { method: 'POST', cookie }), 200);
     assert.equal(done.assetId, assetId);
     assert.equal(done.duplicate, false);
@@ -134,6 +134,29 @@ try {
     assert.equal(response.headers.get('Content-Type'), 'video/mp4');
     assert.equal(digestHex(Buffer.from(await response.arrayBuffer())), sha256);
     assert.equal(await call(`/api/media/${projectId}/${assetId}`, { cookie: '' }).then(r => r.status), 401);
+  });
+
+  await verify('公开读取链接：签名直链可 GET/HEAD，错签、过期与越权都被拒', async () => {
+    const upload = await db.prepare('SELECT object_key FROM uploads WHERE id=?').bind(uploadId).first();
+    const made = await json(await call('/api/share', { method: 'POST', cookie, body: { key: upload.object_key, expiresSeconds: 600 } }), 201);
+    const shared = new URL(made.url);
+    assert.ok(/^\/r\/\d{10,}\.[a-f0-9]{32}\//.test(shared.pathname), made.url);
+    // 第三方服务不带 cookie、可能先探 HEAD，所以两种方法都要在同一链接上成立。
+    const fetched = await runtime.dispatchFetch(made.url, { headers: { Origin: 'https://relay.example' } });
+    assert.equal(fetched.status, 200);
+    assert.equal(fetched.headers.get('Content-Type'), 'video/mp4');
+    assert.equal(digestHex(Buffer.from(await fetched.arrayBuffer())), sha256);
+    const head = await runtime.dispatchFetch(made.url, { method: 'HEAD' });
+    assert.equal(head.status, 200);
+    assert.equal(head.headers.get('Content-Length'), String(bytes.length));
+    const expired = Math.floor(Date.now() / 1000) - 60;
+    const staleSig = createHmac('sha256', 'secret-example').update(`${expired}:${upload.object_key}`).digest('hex').slice(0, 32);
+    assert.equal(await runtime.dispatchFetch(`https://app.test/r/${expired}.${staleSig}/${upload.object_key}`).then(r => r.status), 410);
+    const expires = Math.floor(Date.now() / 1000) + 60;
+    assert.equal(await runtime.dispatchFetch(`https://app.test/r/${expires}.${'a'.repeat(32)}/${upload.object_key}`).then(r => r.status), 403);
+    assert.equal(await call('/api/share', { method: 'POST', cookie, body: { key: 'workspaces/00000000-0000-0000-0000-000000000000/x', expiresSeconds: 60 } }).then(r => r.status), 403);
+    assert.equal(await call('/api/share', { method: 'POST', cookie: '', body: { key: upload.object_key } }).then(r => r.status), 401);
+    return { path: shared.pathname.replace(/[a-f0-9]{32}/, '<sig>') };
   });
 
   await verify('保存替换方案与检查可用，执行入口仍为 409', async () => {

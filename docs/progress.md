@@ -318,3 +318,20 @@ Hypit 失败返回 hypit.cli-error@1，适配器已将其作为已知错误协�
 ## 2026-10-17 核心集成更新
 
 锁定 Pi 1.1.0 / Hypit 0.2.13，Skill 随库保存。新增任务绑定 Pi RPC、工程工具、持久记录、停止及中断恢复。9 项测试通过，包含真实无模型 Pi 接入。模型编写与视频生成未验收；无 Build 入口，尚不是完整视频交付版本。安装及许可边界以 README 为准。
+
+## 2026-10-21 视频复刻：Seedance 换主体首次成功
+
+把参考片里的狗换成用户提供的黑白奶牛猫，链路第一次真正跑通。
+
+阻塞点与修复：TokensFactory 提交 Seedance 时报 `normalize media video request failed: r2 uploader returned status 400`。定位到我们自己签的 R2 GET 预签名链接 HEAD 返回 403（GET 正常），中转站取素材时会先探 HEAD。Worker 新增带 HMAC 签名的公开读取路由 `GET|HEAD /r/<expires>.<sig>/<key>` 与签发接口 `POST /api/share`，同一链接同时支持两种方法，桶保持私有。换成该直链后提交立即返回 200。
+
+实跑两条 `seedance2.0-933`，10 秒 720p 9:16，原片作 `reference_videos`、猫图作 `images`：
+
+1. `task_63Pc4QQ3cP6Gz8noaVYqWyGPFiOebAuT`：结构化提示词（"Replace the dog in Video 1 with…"）→ 提交成功、镜头节奏照搬，但成片 1.9 秒处仍是巴哥犬，主体替换失败。
+2. `task_WNJ5SPBihdDIsJuectBpXvS8Bg2pkwcC`：改成 5 条硬规则（狗必须不出现、每帧动物都是 Image 1 的猫、镜头顺序、产品一致、竖屏）→ 猫替换成功。
+
+成片核对（`gemini-3.8-flash` 读片 + 抽帧复核）：10 秒 6 个镜头与原片一一对应（产品开场 / 动物特写 / 爪印转场 / 拉出布条 / 零食口袋特写 / 结尾字幕）；主角为黑白奶牛猫，无狗；产品仍是黄蓝 "Pet Cute" 包装与印花布条；结尾字幕 `HIDE IT. / FIND IT. / AGAIN!` 与配色复现。
+
+已知差距：原片里动物咬住并拉扯布条的动作没有继承，成片只有张嘴；原片 15 秒，受「输入视频+输出时长 ≤ 25 秒」限制只出 10 秒。
+
+证据：`G:/Data/VideoProduction/remix-outputs/`（成片、原片、并排对照 `compare-original-vs-remix.mp4`）；R2 `probes/seedance-out-1792572121219.mp4` 与 `probes/seedance-out-1792572473932.mp4`。

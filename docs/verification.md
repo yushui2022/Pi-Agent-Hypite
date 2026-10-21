@@ -306,3 +306,13 @@ P0 尚未通过云端关口。用户选择云端账号和预算稍后补；精�
 锁定 Pi 1.1.0 / Hypit 0.2.13，Skill 随库保存。新增任务绑定 Pi RPC、工程工具、持久记录、停止及中断恢复。9 项测试通过，包含真实无模型 Pi 接入。模型编写与视频生成未验收；无 Build 入口，尚不是完整视频交付版本。安装及许可边界以 README 为准。
 
 页面验收：本地任务 job_ccacd78f-0666-4e6f-8c30-ab9e23b7b815 点击接入检查成功，真实 Pi sessionId 为 01a14a8e-3f2b-758c-9ae4-fbf55745f70a。截图 output/agent-integration.png。Windows 并发读取时原子替换增加短暂重试；修复后重新执行 9 项测试全部通过。真实 Hypit main.svml/build.svrun 检查和 plan 通过，错误工程被拒绝。Doctor 报告：G:/DevCache/Temp/pi-agent-hypite/doctor-NpMX5T/report.json。
+
+## 2026-10-21 公开读取路由与 Seedance 换主体验收
+
+`npm run verify:worker-api`：13 项通过（新增「公开读取链接」一项）。本地 workerd 启动真实生产入口，断言：`POST /api/share` 对自己空间的素材返回 201 且链接形如 `/r/<expires>.<32hex>/<key>`；该链接在无 Cookie、带外部 Origin 时 GET 200、Content-Type 为视频类型、字节哈希与上传一致；同一链接 HEAD 200 且 Content-Length 正确；自己算的过期链接 410、错签 403；对别的空间前缀签发 403；未登录签发 401。
+
+`node experiments/workers-p0/node_modules/typescript/bin/tsc -p apps/saas-worker/tsconfig.json` 通过；部署版本 `9b03c9cb-212a-4c49-a4f1-0ba0ddffb1e5`。
+
+线上提交证据（非模拟）：`POST https://tokensfactory.cc/v1/videos` 换用 `/r/` 直链后返回 200，`task_63Pc4QQ3cP6Gz8noaVYqWyGPFiOebAuT` 与 `task_WNJ5SPBihdDIsJuectBpXvS8Bg2pkwcC` 均 completed，各出片 4.6/4.5 MB、720x1280、10.04 秒。抽帧（1.4s/1.9s/3.5s/6s/8.6s）交 `gemini-3.8-flash` 复核：第一条 1.9 秒为巴哥犬（失败），第二条 1.4s 与 1.9s 均为黑白奶牛猫、其余帧无狗（成功）。
+
+未覆盖：动物咬拉布条的动作继承失败；输入 15 秒 + 输出 10 秒的上限使时长无法对齐原片；`POST /api/share` 与 `/r/` 只在本地 workerd 与本机脚本验证，尚未在浏览器端接产品流程。

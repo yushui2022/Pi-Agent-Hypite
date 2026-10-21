@@ -60,6 +60,21 @@ const publicUser = (account: { userId: string; email: string; name: string; work
   workspace_id: account.workspaceId, workspace_name: account.workspaceName,
 });
 
+/** Grants time-boxed public reads of one object, for services that cannot send auth. */
+async function shareSignature(key: string, expires: number, secret: string): Promise<string> {
+  const imported = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', imported, new TextEncoder().encode(`${expires}:${key}`)));
+  return Array.from(mac, byte => byte.toString(16).padStart(2, '0')).join('').slice(0, 32);
+}
+
+/** Same fallback the browser gets: a presigned PUT may arrive without a content type. */
+const typeFromKey = (key: string): string =>
+  /\.(mp4|mov|m4v)$/i.test(key) ? 'video/mp4'
+    : /\.(jpe?g)$/i.test(key) ? 'image/jpeg'
+      : /\.png$/i.test(key) ? 'image/png'
+        : /\.webp$/i.test(key) ? 'image/webp'
+          : 'application/octet-stream';
+
 const s3Config = (env: Env): S3Config => ({
   endpoint: env.S3_ENDPOINT, bucket: env.S3_BUCKET,
   accessKeyId: env.S3_ACCESS_KEY_ID, secretAccessKey: env.S3_SECRET_ACCESS_KEY, region: 'auto',
@@ -76,6 +91,26 @@ export default {
 
     try {
       if (url.pathname === '/healthz' && method === 'GET') return json({ ok: true });
+
+      // Public, signature-gated object read. Third-party services such as the video relay fetch
+      // URLs without our cookies and often probe with HEAD first; a presigned S3 GET rejects
+      // HEAD, so this route answers both methods for one object and nothing else.
+      const share = /^\/r\/(\d{10,})\.([a-f0-9]{32})\/(.+)$/.exec(url.pathname);
+      if (share && ['GET', 'HEAD'].includes(method)) {
+        const [, expiresText, signature, key] = share;
+        const expires = Number(expiresText);
+        if (expires * 1000 < Date.now()) return new Response('链接已过期', { status: 410 });
+        if (await shareSignature(key, expires, env.S3_SECRET_ACCESS_KEY) !== signature) return new Response('链接无效', { status: 403 });
+        const object = await env.MEDIA.get(key);
+        if (!object) return new Response('对象不存在', { status: 404 });
+        const headers = new Headers({
+          'Content-Type': object.httpMetadata?.contentType ?? typeFromKey(key),
+          'Content-Length': String(object.size),
+          'Accept-Ranges': 'bytes', 'Cache-Control': 'private, max-age=60',
+          ETag: object.httpEtag,
+        });
+        return method === 'HEAD' ? new Response(null, { headers }) : new Response(object.body, { headers });
+      }
 
       if (method === 'POST' && (url.pathname === '/api/auth/register' || url.pathname === '/api/auth/login')) {
         const body = await readJson(request);
@@ -102,6 +137,15 @@ export default {
       // Provider configuration and free connectivity probes. Authenticated: the answers name
       // services and models, which is not public information.
       if (method === 'GET' && url.pathname === '/api/providers') return json(providerStatus(env));
+      if (method === 'POST' && url.pathname === '/api/share') {
+        const body = await readJson(request);
+        const key = String(body.key ?? '');
+        // Only the caller's own workspace objects, plus the pipeline's own scratch prefix.
+        if (!key.startsWith(`workspaces/${account.workspaceId}/`) && !key.startsWith('probes/')) throw fault('无权分享该对象', 403);
+        const expires = Math.floor(Date.now() / 1000) + Math.min(Number(body.expiresSeconds) || 3600, 86400);
+        const signature = await shareSignature(key, expires, env.S3_SECRET_ACCESS_KEY);
+        return json({ url: `${url.origin}/r/${expires}.${signature}/${key}`, expiresAt: new Date(expires * 1000).toISOString() }, 201);
+      }
       if (method === 'POST' && url.pathname === '/api/providers/probe') {
         if (!env.TOKENSFACTORY_API_KEY && !env.AUTODL_API_KEY) throw fault('生成服务尚未配置', 409);
         const [tokensFactory, autoDL] = await Promise.all([probeTokensFactory(env), probeAutoDL(env)]);
