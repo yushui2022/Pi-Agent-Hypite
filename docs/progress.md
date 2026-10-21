@@ -8,7 +8,7 @@
 
 实现：`apps/saas-worker/src/providers.ts`（配置状态 + 零成本探测）、`GET /api/providers`、`POST /api/providers/probe`；两个 key 以 secret 写入 Worker；基址/模型/工作流写在 `vars`。`verify:worker-api` 增至 11 项。
 
-**当天晚些时候本机到 `workers.dev` 的网络中断**：阿里与 DNSPod 的 DoH 都返回伪造 IP（分别为 157.240.20.8 与 93.179.102.140），直连 Cloudflare 边缘 IP 被 RST。部署本身正常（`wrangler deployments list` 可见版本 `6a0731cc`），是链路问题。这暴露一个产品级问题：**国内网络下 workers.dev 不可用**，正式对外需要自定义域名。
+**当天晚些时候本机到 `workers.dev` 的网络中断**：阿里与 DNSPod 的 DoH 都返回伪造 IP（分别为 157.240.20.8 与 93.179.102.140），直连 Cloudflare 边缘 IP 被 RST。部署本身正常（`wrangler deployments list` 可见版本 `6a0731cc`），是链路问题。用户开启 VPN 后恢复，随即完成推送与线上冒烟（6/6，含生成服务探测）。**但这仍是产品级约束**：未开代理的国内用户访问不了 workers.dev，正式对外需要自定义域名。
 
 未做：真实图片/视频生成调用（按你的规则，付费前先报范围）。
 
