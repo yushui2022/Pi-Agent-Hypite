@@ -34,8 +34,13 @@ const cookieOf = response => {
 function start(testOnly = true) {
   return new Miniflare({
     modules: true, modulesRoot: output, scriptPath: path.join(output, 'worker.js'), compatibilityDate: '2026-07-30',
-    bindings: testOnly ? { LOCAL_STORAGE_TEST_ONLY: 'true' } : {},
+    bindings: testOnly ? {
+      LOCAL_STORAGE_TEST_ONLY: 'true',
+      S3_ENDPOINT: 'https://acct123.r2.cloudflarestorage.com', S3_BUCKET: 'pi-media',
+      S3_ACCESS_KEY_ID: 'AKIDEXAMPLE', S3_SECRET_ACCESS_KEY: 'secret-example',
+    } : {},
     d1Databases: ['DB'], d1Persist: path.join(output, 'd1'),
+    r2Buckets: ['MEDIA'], r2Persist: path.join(output, 'r2'),
     log: new Log(LogLevel.WARN),
   });
 }
@@ -149,6 +154,77 @@ try {
     const seenByA = await json(await call('/api/remix', { cookie: cookieOf(a) }), 200);
     assert.deepEqual(seenByA.ids, [], '甲不应看到乙的项目');
     assert.notEqual(seenByA.workspaceId, seenByB.workspaceId);
+  });
+
+  let cookieA2, projectA, upload, uploadSha;
+  await verify('申请上传返回带空间前缀的签名 URL，校验和强制参与签名', async () => {
+    const login = await call('/api/auth/login', { method: 'POST', body: { email: 'a@example.test', password: 'correct-horse-9' } });
+    cookieA2 = cookieOf(login);
+    const me = await json(await call('/api/session', { cookie: cookieA2 }), 200);
+    projectA = 'remix_66666666-6666-4666-8666-666666666666';
+    await db.prepare('INSERT INTO remix_projects(id,workspace_id,document,revision) VALUES (?,?,?,?)')
+      .bind(projectA, me.user.workspaceId, JSON.stringify({ id: projectA }), 'e'.repeat(64)).run();
+    const bytes = Buffer.from('synthetic-mp4-payload');
+    uploadSha = createHash('sha256').update(bytes).digest('hex');
+    upload = (await json(await call('/api/uploads', { method: 'POST', cookie: cookieA2, body: { projectId: projectA, name: 'ref.mp4', mime: 'video/mp4', size: bytes.length, sha256: uploadSha } }), 200)).upload;
+    assert.ok(upload.key.startsWith(`workspaces/${me.user.workspaceId}/projects/${projectA}/assets/asset_`), upload.key);
+    const url = new URL(upload.url);
+    assert.equal(url.host, 'acct123.r2.cloudflarestorage.com');
+    assert.match(url.searchParams.get('X-Amz-Signature'), /^[a-f0-9]{64}$/);
+    assert.equal(url.searchParams.get('X-Amz-SignedHeaders'), 'host;x-amz-checksum-sha256');
+    assert.equal(upload.headers['x-amz-checksum-sha256'], createHash('sha256').update(bytes).digest('base64'));
+  });
+
+  await verify('不合规的上传申请被拒绝', async () => {
+    const valid = { projectId: projectA, name: 'a.mp4', mime: 'video/mp4', size: 10, sha256: uploadSha };
+    await json(await call('/api/uploads', { method: 'POST', cookie: cookieA2, body: { ...valid, size: 100_000_001 } }), 413);
+    await json(await call('/api/uploads', { method: 'POST', cookie: cookieA2, body: { ...valid, mime: 'text/plain' } }), 415);
+    await json(await call('/api/uploads', { method: 'POST', cookie: cookieA2, body: { ...valid, sha256: 'nope' } }), 400);
+    // A project in another workspace answers like a missing one, before any URL is issued.
+    await json(await call('/api/uploads', { method: 'POST', cookie: cookieA2, body: { ...valid, projectId: 'remix_77777777-7777-4777-8777-777777777777' } }), 404);
+  });
+
+  await verify('未上传就确认会被拒绝，并作废该申请', async () => {
+    await json(await call(`/api/uploads/${upload.uploadId}/complete`, { method: 'POST', cookie: cookieA2 }), 409);
+    const row = await db.prepare('SELECT state FROM uploads WHERE id=?').bind(upload.uploadId).first();
+    assert.equal(row.state, 'failed');
+  });
+
+  await verify('校验和不匹配时拒绝确认并删除对象', async () => {
+    const bucket = await runtime.getR2Bucket('MEDIA');
+    const bytes = Buffer.from('tampered-payload');
+    const pending = (await json(await call('/api/uploads', { method: 'POST', cookie: cookieA2, body: { projectId: projectA, name: 't.mp4', mime: 'video/mp4', size: bytes.length, sha256: uploadSha } }), 200)).upload;
+    // The object lands with its own real checksum, which cannot match the declared one.
+    await bucket.put(pending.key, bytes, { sha256: createHash('sha256').update(bytes).digest() });
+    await json(await call(`/api/uploads/${pending.uploadId}/complete`, { method: 'POST', cookie: cookieA2 }), 422);
+    assert.equal(await bucket.head(pending.key), null, '被拒绝的对象必须删除');
+  });
+
+  await verify('校验和一致时确认通过并返回真实哈希，重复确认被拒绝', async () => {
+    const bucket = await runtime.getR2Bucket('MEDIA');
+    const bytes = Buffer.from('verified-video-bytes');
+    const sha = createHash('sha256').update(bytes).digest('hex');
+    const pending = (await json(await call('/api/uploads', { method: 'POST', cookie: cookieA2, body: { projectId: projectA, name: 'ok.mp4', mime: 'video/mp4', size: bytes.length, sha256: sha } }), 200)).upload;
+    await bucket.put(pending.key, bytes, { sha256: createHash('sha256').update(bytes).digest() });
+    const done = await json(await call(`/api/uploads/${pending.uploadId}/complete`, { method: 'POST', cookie: cookieA2 }), 200);
+    assert.equal(done.asset.assetId, pending.assetId);
+    assert.equal(done.asset.sha256, sha);
+    assert.equal(done.asset.size, bytes.length);
+    assert.ok(await bucket.head(pending.key), '通过确认的对象必须保留');
+    await json(await call(`/api/uploads/${pending.uploadId}/complete`, { method: 'POST', cookie: cookieA2 }), 409);
+  });
+
+  await verify('其他空间不能确认我的上传', async () => {
+    const bytes = Buffer.from('cross-tenant-attempt');
+    const sha = createHash('sha256').update(bytes).digest('hex');
+    const pending = (await json(await call('/api/uploads', { method: 'POST', cookie: cookieA2, body: { projectId: projectA, name: 'x.mp4', mime: 'video/mp4', size: bytes.length, sha256: sha } }), 200)).upload;
+    const other = await call('/api/auth/login', { method: 'POST', body: { email: 'b@example.test', password: 'correct-horse-9' } });
+    await json(await call(`/api/uploads/${pending.uploadId}/complete`, { method: 'POST', cookie: cookieOf(other) }), 404);
+  });
+
+  await verify('过期申请不能确认', async () => {
+    await db.prepare('UPDATE uploads SET expires_at=?, state=? WHERE id=?').bind(Date.now() - 1000, 'pending', upload.uploadId).run();
+    await json(await call(`/api/uploads/${upload.uploadId}/complete`, { method: 'POST', cookie: cookieA2 }), 409);
   });
 
   report.ok = true;

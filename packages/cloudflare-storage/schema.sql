@@ -47,3 +47,24 @@ CREATE TABLE IF NOT EXISTS remix_projects (
 CREATE INDEX IF NOT EXISTS projects_workspace ON remix_projects(workspace_id);
 CREATE INDEX IF NOT EXISTS memberships_user ON memberships(user_id);
 CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires_at);
+
+-- Pending direct uploads. A row exists only between "the browser asked for a signed URL"
+-- and "the server verified what actually landed in R2". Nothing here is user-trusted:
+-- state moves to complete only after a HEAD comparison of size and native checksum.
+CREATE TABLE IF NOT EXISTS uploads (
+  id TEXT PRIMARY KEY NOT NULL,
+  workspace_id TEXT NOT NULL,
+  project_id TEXT NOT NULL,
+  asset_id TEXT NOT NULL,
+  object_key TEXT NOT NULL,
+  name TEXT NOT NULL,
+  mime TEXT NOT NULL,
+  size INTEGER NOT NULL CHECK(size > 0),
+  sha256 TEXT NOT NULL CHECK(length(sha256) = 64),
+  state TEXT NOT NULL CHECK(state IN ('pending','complete','failed')),
+  expires_at INTEGER NOT NULL,
+  created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS uploads_workspace ON uploads(workspace_id, state);
+CREATE INDEX IF NOT EXISTS uploads_expiry ON uploads(expires_at);

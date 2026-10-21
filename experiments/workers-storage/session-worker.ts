@@ -7,7 +7,12 @@ import {
 import { createD1Repository } from '../../packages/cloudflare-storage/d1';
 import { fault } from '../../packages/remix/revision.mjs';
 
-interface Env { DB: D1Database; LOCAL_STORAGE_TEST_ONLY?: string }
+import { authorizeUpload, completeUpload } from '../../packages/cloudflare-storage/upload';
+
+interface Env {
+  DB: D1Database; MEDIA: R2Bucket; LOCAL_STORAGE_TEST_ONLY?: string;
+  S3_ENDPOINT?: string; S3_BUCKET?: string; S3_ACCESS_KEY_ID?: string; S3_SECRET_ACCESS_KEY?: string;
+}
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -46,6 +51,20 @@ export default {
       if (url.pathname === '/api/session' && method === 'GET') return Response.json({ user: account });
       if (url.pathname === '/api/remix' && method === 'GET') {
         return Response.json({ workspaceId: account.workspaceId, ids: await createD1Repository(env.DB, account.workspaceId).ids() });
+      }
+      if (url.pathname === '/api/uploads' && method === 'POST') {
+        const body = (await request.json()) as Record<string, unknown>;
+        // Ownership is verified before a signed URL exists for someone else's project.
+        await createD1Repository(env.DB, account.workspaceId).read(String(body.projectId));
+        const upload = await authorizeUpload(env.DB, account.workspaceId, body, {
+          endpoint: env.S3_ENDPOINT ?? '', bucket: env.S3_BUCKET ?? '',
+          accessKeyId: env.S3_ACCESS_KEY_ID ?? '', secretAccessKey: env.S3_SECRET_ACCESS_KEY ?? '',
+        });
+        return Response.json({ upload });
+      }
+      const completion = /^\/api\/uploads\/(upload_[a-f0-9-]{36})\/complete$/.exec(url.pathname);
+      if (completion && method === 'POST') {
+        return Response.json({ asset: await completeUpload(env.DB, env.MEDIA, account.workspaceId, completion[1]) });
       }
       throw fault('接口不存在', 404);
     } catch (error) {

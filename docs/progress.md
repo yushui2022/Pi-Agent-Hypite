@@ -1,3 +1,12 @@
+# 最近实施：2026-10-20 R2 直传授权与完成确认
+
+`packages/cloudflare-storage/upload.ts` + `uploads` 表：浏览器先申请、直传 R2、再由服务端复核。对象键由服务端用会话里的空间生成，客户端改不了；校验和作为签名头强制携带；确认时用 R2 的 HEAD 结果比对大小与原生校验和，**不采信浏览器事后声明的任何事实**；复核失败即删除对象并作废申请，不留垃圾。
+
+过程中发现并修正一个真实缺陷：`r2.ts` 里 `object.checksums.sha256` 是 **ArrayBuffer**，不是十六进制字符串，初版直接字符串比较会永远失败（等于所有上传都无法确认）。已按 `r2.ts` 的既有约定转十六进制。
+
+`npm run verify:session` 扩到 18 项；`workers:storage:test` 12/12、`npm test` 51/51 未回归。仍未验证：签名 URL 是否被真实 R2 接受（本地无 S3 端点）。
+
+
 # 最近实施：2026-10-20 R2 直传签名（本地可验部分）
 
 `packages/cloudflare-storage/sigv4.ts`：AWS SigV4 预签名 URL（R2 的 S3 兼容端点），Web Crypto 实现，Worker 可直接运行。上传体积不进 Worker，payload 固定 `UNSIGNED-PAYLOAD`，因此 100 MB 素材不需要缓冲。

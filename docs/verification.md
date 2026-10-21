@@ -1,3 +1,14 @@
+# 2026-10-20 R2 直传授权与完成确认验证
+
+- `npm run verify:session`：18/18 通过（新增 7 项上传检查）；`workers:storage:test` 12/12、`npm test` 51/51 未回归；`tsc -p experiments/workers-storage/tsconfig.json` 通过。
+- 申请上传返回的键以 `workspaces/<本空间>/projects/<项目>/assets/asset_` 开头；URL 指向 S3 端点且签名头为 `host;x-amz-checksum-sha256`，校验和以 base64 出现在必须发送的头里。
+- 拒绝路径：超过 100 MB → 413；类型不在白名单 → 415；校验和非 64 位十六进制 → 400；他人项目的 projectId → 404（在签发 URL 之前拦下）。
+- 未上传就确认 → 409 且申请转为 `failed`；对象校验和与申请不一致 → 422 且对象被删除；一致 → 200 并返回真实哈希与大小，对象保留，重复确认 → 409。
+- 其他空间用同一 uploadId 确认 → 404（按空间作用域查询，等同不存在）；过期申请确认 → 409。
+- 修正：R2 的原生校验和是 ArrayBuffer（见 `r2.ts`），初版按字符串比较会永远失败，已改为十六进制。
+- **未验证**：签名 URL 被真实 R2 接受、真实网络下的中断与重试、真实费用。未连接云账号，未上传任何对象。
+
+
 # 2026-10-20 R2 直传签名验证
 
 - `npm test`：51/51 通过（新增 7 项 SigV4 测试）；`tsc -p experiments/workers-storage/tsconfig.json` 通过。
